@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ Cái Blockchain Nội Bộ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --nav-bg: #323334;
+            --sub-nav-bg: #27282a;
+            --active-orange: #d19a3b;
+            --bg-color: #f8f9fa;
+            --text-dark: #333333;
+            --text-gray: #888888;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+        }
+
+        /* Top Navigation */
+        .navbar {
+            background-color: var(--nav-bg);
+            display: flex;
+            align-items: center;
+            height: 60px;
+            padding: 0 20px;
+        }
+
+        .nav-items {
+            display: flex;
+            height: 100%;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: #b0b0b0;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .nav-item.active {
+            color: var(--active-orange);
+            border-bottom: 3px solid var(--active-orange);
+        }
+
+        .nav-item svg {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .search-bar {
+            margin-left: auto;
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 20px;
+            padding: 6px 15px;
+            display: flex;
+            align-items: center;
+            width: 300px;
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: #fff;
+            width: 100%;
+            outline: none;
+            font-size: 12px;
+        }
+
+        /* Sub Navigation */
+        .sub-nav {
+            background-color: var(--sub-nav-bg);
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #b0b0b0;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .stat-group {
+            display: flex;
+            flex-direction: column;
+            margin-right: 40px;
+        }
+
+        .stat-label {
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: var(--active-orange);
+            font-size: 16px;
+        }
+
+        .stat-value.green {
+            color: #4cd137;
+        }
+
+        .sub-nav-right {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background-color: var(--active-orange);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-icon {
+            background-color: var(--active-orange);
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff;
+        }
+
+        /* Mnemonic / Config Area */
+        .config-area {
+            background-color: #ffffff;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .config-value {
+            font-family: 'Ubuntu Mono', monospace;
+            font-size: 16px;
+            color: #444;
+            letter-spacing: 0.5px;
+        }
+
+        /* List Area */
+        .list-container {
+            background-color: #ffffff;
+        }
+
+        .list-row {
+            display: flex;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        .list-row:hover {
+            background-color: #fcfcfc;
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .col-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .col-value {
+            font-family: 'Ubuntu Mono', monospace;
+            font-size: 18px;
+            color: var(--text-dark);
+        }
+
+        .col-address { flex: 4; padding-right: 20px;}
+        .col-balance { flex: 2; }
+        .col-txcount { flex: 1; }
+        .col-index { flex: 1; }
+        .col-action { width: 50px; display: flex; align-items: center; justify-content: flex-end;}
+
+        .icon-key {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: var(--text-dark);
+            stroke-width: 2;
+            cursor: pointer;
+        }
+
+        .badge {
+            font-family: 'Roboto', sans-serif;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .badge-CRITICAL { background: #ffebee; color: #c62828; }
+        .badge-HIGH { background: #fff3e0; color: #ef6c00; }
+        .badge-MEDIUM { background: #fff8e1; color: #f57f17; }
+        .badge-LOW { background: #e8f5e9; color: #2e7d32; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <div class="navbar">
+        <div class="nav-items">
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                TÀI KHOẢN
+            </div>
+            <div class="nav-item active">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                KHỐI
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                GIAO DỊCH
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                HỢP ĐỒNG
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                SỰ KIỆN
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                NHẬT KÝ
+            </div>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="TÌM KIẾM SỐ KHỐI HOẶC MÃ BĂM...">
+        </div>
+    </div>
+
+    <!-- Sub Navigation -->
+    <div class="sub-nav">
+        <div class="stat-group">
+            <div class="stat-label">SỐ KHỐI HIỆN TẠI</div>
+            <div class="stat-value" id="current-block">0</div>
+        </div>
+        <div class="stat-group">
+            <div class="stat-label">MÁY CHỦ HỆ THỐNG</div>
+            <div class="stat-value">HTTP://127.0.0.1:8000</div>
+        </div>
+        <div class="stat-group">
+            <div class="stat-label">GIAO THỨC ĐỒNG THUẬN</div>
+            <div class="stat-value">INTERNAL CHAIN</div>
+        </div>
+        <div class="stat-group">
+            <div class="stat-label">TRẠNG THÁI GHI LOG</div>
+            <div class="stat-value green">AUTO-RECORDING</div>
+        </div>
+
+        <div class="sub-nav-right">
+            <div class="stat-group" style="margin-right: 20px;">
+                <div class="stat-label">WORKSPACE</div>
+                <div class="stat-value">FRAUD DETECTION</div>
+            </div>
+            <button class="btn" onclick="location.reload()">LÀM MỚI</button>
+            <button class="btn-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings area removed as per requirement -->
+
+    <!-- List Area -->
+    <div class="list-container" id="blockchain-container">
+        <!-- JS sẽ inject các row vào đây -->
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const container = document.getElementById('blockchain-container');
+            const currentBlockEl = document.getElementById('current-block');
+
+            try {
+                const response = await fetch('/blockchain-ledger');
+                const result = await response.json();
+                
+                const chain = result.chain;
+                currentBlockEl.textContent = result.total_blocks;
+                
+                // Render từ khối mới nhất đến Genesis
+                [...chain].reverse().forEach((block) => {
+                    const blockDiv = document.createElement('div');
+                    blockDiv.className = 'list-row';
+                    
+                    const isGenesis = block.index === 1;
+                    
+                    let riskHtml = "";
+                    let detailHtml = isGenesis ? "SỔ CÁI GỐC" : "0.00 VND";
+                    let txHashHtml = isGenesis ? "" : "";
+                    
+                    if (!isGenesis && block.data && block.data.transaction) {
+                        const tx = block.data.transaction;
+                        // Hiển thị Loại giao dịch + Số tiền
+                        detailHtml = `<strong>[${tx.type}]</strong> &nbsp; ${tx.amount.toLocaleString()} VND`;
+                        
+                        const level = block.data.level;
+                        riskHtml = level ? `<span class="badge badge-${level}">${level} RISK</span>` : '';
+                        
+                        // Hiển thị Hash giao dịch gốc
+                        const txHash = block.data.hash;
+                        let shortTxHash = txHash.length > 20 ? txHash.substring(0, 10) + "..." + txHash.substring(txHash.length - 10) : txHash;
+                        txHashHtml = `<div style="font-size:11px; color:var(--text-gray); margin-top:5px; font-weight: 700;">TX HASH: <span style="font-family:'Ubuntu Mono';color:var(--active-orange);font-size:14px;font-weight:normal;">${shortTxHash}</span></div>`;
+                    }
+
+                    // Cắt bớt hash nếu dài quá để vừa màn hình
+                    let displayHash = block.hash;
+                    if(displayHash.length > 42 && !displayHash.startsWith("0x")) {
+                        displayHash = "0x" + displayHash.substring(0, 40);
+                    }
+
+                    blockDiv.innerHTML = `
+                        <div class="col col-address">
+                            <div class="col-label">MÃ BĂM KHỐI (BLOCK HASH)</div>
+                            <div class="col-value">${displayHash}</div>
+                            ${txHashHtml}
+                        </div>
+                        <div class="col col-balance">
+                            <div class="col-label">THÔNG TIN GIAO DỊCH</div>
+                            <div class="col-value" style="display:flex; align-items:center;">
+                                ${detailHtml} ${riskHtml}
+                            </div>
+                        </div>
+                        <div class="col col-txcount">
+                            <div class="col-label">SỐ GIAO DỊCH</div>
+                            <div class="col-value">${isGenesis ? "0" : "1"}</div>
+                        </div>
+                        <div class="col col-index">
+                            <div class="col-label">CHỈ SỐ (INDEX)</div>
+                            <div class="col-value">${block.index - 1}</div>
+                        </div>
+                        <div class="col col-action">
+                            <svg class="icon-key" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                        </div>
+                    `;
+                    
+                    container.appendChild(blockDiv);
+                });
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `<div style="padding: 20px; color: red;">Lỗi kết nối tới Blockchain Node!</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+[
+    {
+        "index": 1,
+        "timestamp": 1779274569.1352518,
+        "data": "Genesis Block",
+        "previous_hash": "0",
+        "hash": "0bf7f64a3345e0311d4745f3c76e4a17f734a0e1b3b1155dee70c473baf0004e"
+    },
+    {
+        "index": 2,
+        "timestamp": 1779274621.5603151,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 100000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0x90ca5778c707ab45ea5dc02de345f34898a4303ae895c93229194c385177e3d0",
+            "level": "LOW",
+            "score": 0,
+            "reasons": []
+        },
+        "previous_hash": "0bf7f64a3345e0311d4745f3c76e4a17f734a0e1b3b1155dee70c473baf0004e",
+        "hash": "677d2484f20f051cb696302dfe575d5057af4d969b03ca72bf78db4cce3cd444"
+    },
+    {
+        "index": 3,
+        "timestamp": 1779274670.0202336,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 100000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0x90ca5778c707ab45ea5dc02de345f34898a4303ae895c93229194c385177e3d0",
+            "level": "LOW",
+            "score": 0,
+            "reasons": []
+        },
+        "previous_hash": "677d2484f20f051cb696302dfe575d5057af4d969b03ca72bf78db4cce3cd444",
+        "hash": "48b3ee02f5bace4ba77d020ebca9cc6b27750acf0c9637a5fd90823a5be4e317"
+    },
+    {
+        "index": 4,
+        "timestamp": 1779274992.0852528,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 100000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0x90ca5778c707ab45ea5dc02de345f34898a4303ae895c93229194c385177e3d0",
+            "level": "LOW",
+            "score": 0,
+            "reasons": []
+        },
+        "previous_hash": "48b3ee02f5bace4ba77d020ebca9cc6b27750acf0c9637a5fd90823a5be4e317",
+        "hash": "e1c3b61f3f39f35067af38db1e25383a523c62c036c90be6b43d9d69d4997d78"
+    },
+    {
+        "index": 5,
+        "timestamp": 1779275000.6382868,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 100000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0x90ca5778c707ab45ea5dc02de345f34898a4303ae895c93229194c385177e3d0",
+            "level": "LOW",
+            "score": 0,
+            "reasons": []
+        },
+        "previous_hash": "e1c3b61f3f39f35067af38db1e25383a523c62c036c90be6b43d9d69d4997d78",
+        "hash": "e130f54d0c60b10f08e3d2e8fb141ccf8f0934f6b48fed7c68412ca12d5a69d6"
+    },
+    {
+        "index": 6,
+        "timestamp": 1779275009.0462477,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 100000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0x90ca5778c707ab45ea5dc02de345f34898a4303ae895c93229194c385177e3d0",
+            "level": "LOW",
+            "score": 0,
+            "reasons": []
+        },
+        "previous_hash": "e130f54d0c60b10f08e3d2e8fb141ccf8f0934f6b48fed7c68412ca12d5a69d6",
+        "hash": "fb2a44e104aade7a83fe93edb6a9c29235e0a79f1bfeb2f4aaca7c15ce7f3d82"
+    },
+    {
+        "index": 7,
+        "timestamp": 1779275010.4000506,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 100000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0x90ca5778c707ab45ea5dc02de345f34898a4303ae895c93229194c385177e3d0",
+            "level": "LOW",
+            "score": 0,
+            "reasons": []
+        },
+        "previous_hash": "fb2a44e104aade7a83fe93edb6a9c29235e0a79f1bfeb2f4aaca7c15ce7f3d82",
+        "hash": "23717713a36a6d37e402e937ab9c47dc63db6c91fa0c99d4f44f2ff45ebd6d40"
+    },
+    {
+        "index": 8,
+        "timestamp": 1779275529.140852,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 100000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0x90ca5778c707ab45ea5dc02de345f34898a4303ae895c93229194c385177e3d0",
+            "level": "LOW",
+            "score": 0,
+            "reasons": []
+        },
+        "previous_hash": "23717713a36a6d37e402e937ab9c47dc63db6c91fa0c99d4f44f2ff45ebd6d40",
+        "hash": "31ddd22d4814ae203755820bc5cb942b472273338ad93a0746ba0e61215bbfd9"
+    },
+    {
+        "index": 9,
+        "timestamp": 1779275555.379225,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 1500000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0x93cbc72252886543454b4f06cd0e68cc890b31eb507f60b89b0dd2acf72db6c2",
+            "level": "MEDIUM",
+            "score": 40,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện sai lệch pha số dư toán học (Nghi vấn can thiệp gói tin Payload)"
+            ]
+        },
+        "previous_hash": "31ddd22d4814ae203755820bc5cb942b472273338ad93a0746ba0e61215bbfd9",
+        "hash": "8ad60aa048d9161f6fa5d4fe97916a03eeaeef3fe42cbcce02ad7ac7e1a30c97"
+    },
+    {
+        "index": 10,
+        "timestamp": 1779276542.9974651,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 90000000.0,
+                "old_balance": 100000000.0
+            },
+            "hash": "0x083a4bce09ec66e9d85ceb1225da692c3d4f4312fc612f5eac82d0c20c43ef73",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện giao dịch số tiền lớn phát sinh vào nửa đêm (2h - 4h sáng)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Cảnh báo] Thiết bị mới đăng nhập thực hiện ngay giao dịch giá trị lớn",
+                "Rule Engine: [Cảnh báo] Vận tốc dịch chuyển dòng tiền trong phiên vượt ngưỡng an toàn",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống",
+                "KMeans: Thuật toán phân cụm xếp dòng tiền hiện tại vào nhóm danh mục hành vi rủi ro"
+            ]
+        },
+        "previous_hash": "8ad60aa048d9161f6fa5d4fe97916a03eeaeef3fe42cbcce02ad7ac7e1a30c97",
+        "hash": "542449900fed56c7218b3e756d2b504e4d3a154ea154ff9a84795a428e62f588"
+    }
+]

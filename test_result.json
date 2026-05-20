@@ -1,0 +1,1 @@
+{"risk_score": 0, "confidence_score": 0.009999999776482582, "alert_level": "LOW", "suggested_action": "ALLOW", "fraud_reasons": ["Giao dịch sạch"], "blockchain_hash": "0x25f0322aee3920995c41ad67a0fc902281b0f055155a89da6ede4007b2ce39b8", "blockchain_internal_log": "Không ghi log (An toàn)"}
