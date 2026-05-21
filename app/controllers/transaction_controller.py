@@ -2,9 +2,9 @@
 # FILE: app/controllers.py (CONTROLLER LAYER)
 # ==========================================================================
 from fastapi import APIRouter, HTTPException, Depends
-from app.dtos import TransactionInputDTO, AntiFraudResponseDTO
-from app.repositories import ModelRepository
-from app.services import AntiFraudService
+from app.models.transaction_schema import TransactionInputDTO, AntiFraudResponseDTO
+from app.repositories.repositories import ModelRepository
+from app.services.ai_engine import AntiFraudService
 
 router = APIRouter(prefix="/api/ai", tags=["Hệ thống lõi phân tích rủi ro AI"])
 

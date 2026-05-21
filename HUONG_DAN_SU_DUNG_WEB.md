@@ -9,9 +9,16 @@ Tài liệu này hướng dẫn cách kiểm thử luồng hoạt động của 
 2. Mở cửa sổ Terminal/Command Prompt tại thư mục gốc của dự án (`DOANCOSOCNPM`).
 3. Chạy lệnh khởi động máy chủ Backend:
    ```bash
-   uvicorn main:app --reload
+   python -m uvicorn app.main:app --reload
    ```
 4. Nếu thấy dòng chữ `Application startup complete`, hệ thống đã sẵn sàng hoạt động tại địa chỉ `http://127.0.0.1:8000`.
+
+Các trang giao diện chính:
+- **Trang Đăng Nhập:** `http://127.0.0.1:8000/`
+- **Dashboard Tổng Quan:** `http://127.0.0.1:8000/dashboard`
+- **Danh sách Giao Dịch & Quét AI:** `http://127.0.0.1:8000/transactions`
+- **Sổ cái Blockchain nội bộ:** `http://127.0.0.1:8000/blockchain`
+- **Swagger UI (Test API):** `http://127.0.0.1:8000/docs`
 
 ---
 

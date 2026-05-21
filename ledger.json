@@ -167,5 +167,397 @@
         },
         "previous_hash": "8ad60aa048d9161f6fa5d4fe97916a03eeaeef3fe42cbcce02ad7ac7e1a30c97",
         "hash": "542449900fed56c7218b3e756d2b504e4d3a154ea154ff9a84795a428e62f588"
+    },
+    {
+        "index": 11,
+        "timestamp": 1779367955.133886,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xd1686d1f4d2da7ccee939427481f86a7203fe7e7d9f6ef22d1da31125fdd2e73",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "542449900fed56c7218b3e756d2b504e4d3a154ea154ff9a84795a428e62f588",
+        "hash": "c179a2ceb08ca90c733970f4a14f950fc42821ae57c7f4f4bffedf7d1ddf307e"
+    },
+    {
+        "index": 12,
+        "timestamp": 1779367961.783273,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xd1686d1f4d2da7ccee939427481f86a7203fe7e7d9f6ef22d1da31125fdd2e73",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "c179a2ceb08ca90c733970f4a14f950fc42821ae57c7f4f4bffedf7d1ddf307e",
+        "hash": "1008b6e57fa5a1feb7858fcf9be3b630728ddde2100952fee61e95b11b0e9290"
+    },
+    {
+        "index": 13,
+        "timestamp": 1779368211.864493,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xd1686d1f4d2da7ccee939427481f86a7203fe7e7d9f6ef22d1da31125fdd2e73",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "1008b6e57fa5a1feb7858fcf9be3b630728ddde2100952fee61e95b11b0e9290",
+        "hash": "620055c4e5369343c4d2d0b932495bfc022d7496ef257d2704bfc135cc62f50d"
+    },
+    {
+        "index": 14,
+        "timestamp": 1779368226.1644404,
+        "data": {
+            "transaction": {
+                "type": "PAYMENT",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xb9090ccf22eeaf8d964b1764405a92318aaded9138f63888022b1445b2e9fa30",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "620055c4e5369343c4d2d0b932495bfc022d7496ef257d2704bfc135cc62f50d",
+        "hash": "96e531dd33c31396b1b8c79835f4aeeef80a743bcb41862737030cf3d2feb278"
+    },
+    {
+        "index": 15,
+        "timestamp": 1779368227.25023,
+        "data": {
+            "transaction": {
+                "type": "PAYMENT",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xb9090ccf22eeaf8d964b1764405a92318aaded9138f63888022b1445b2e9fa30",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "96e531dd33c31396b1b8c79835f4aeeef80a743bcb41862737030cf3d2feb278",
+        "hash": "4cc276d415e32531e6a732719c40545eb4d6624b65659b038aa34af5b6c98c10"
+    },
+    {
+        "index": 16,
+        "timestamp": 1779368229.971423,
+        "data": {
+            "transaction": {
+                "type": "PAYMENT",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xb9090ccf22eeaf8d964b1764405a92318aaded9138f63888022b1445b2e9fa30",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "4cc276d415e32531e6a732719c40545eb4d6624b65659b038aa34af5b6c98c10",
+        "hash": "4e7a8148b9ce870a85746b84a22418ee8dbf8fe7e0d4b7c59299bc3ac45d6392"
+    },
+    {
+        "index": 17,
+        "timestamp": 1779368267.80786,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xd1686d1f4d2da7ccee939427481f86a7203fe7e7d9f6ef22d1da31125fdd2e73",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "4e7a8148b9ce870a85746b84a22418ee8dbf8fe7e0d4b7c59299bc3ac45d6392",
+        "hash": "f0136629dd5710a69ca6801ead8917b9bd3d9aec2bb72e4262caf22318821b16"
+    },
+    {
+        "index": 18,
+        "timestamp": 1779368292.7647026,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0x0cfd36c0aa5bd8004c9f79b5c6bd792e0ab57d09259a92a13684f34dec093885",
+            "level": "MEDIUM",
+            "score": 48,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)"
+            ]
+        },
+        "previous_hash": "f0136629dd5710a69ca6801ead8917b9bd3d9aec2bb72e4262caf22318821b16",
+        "hash": "8377412f417556e4d3c6cbcabe3d5fd17adfa34b7028eef0433185063bc67450"
+    },
+    {
+        "index": 19,
+        "timestamp": 1779368617.7953396,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xb0116fe58c97e51dd7b773c84970993a1fece67a8cf44317cb91bb8325c4543b",
+            "level": "MEDIUM",
+            "score": 48,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)"
+            ]
+        },
+        "previous_hash": "8377412f417556e4d3c6cbcabe3d5fd17adfa34b7028eef0433185063bc67450",
+        "hash": "f8b02198e5feef14097fa52527802eaa639d76b875edd6c8b73ac540be3f0d2b"
+    },
+    {
+        "index": 20,
+        "timestamp": 1779368634.5499184,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0x82ecd8a933337f27e9cb5ea59afd610b66c0836f57742552d2228d78e2dc45c4",
+            "level": "LOW",
+            "score": 5,
+            "reasons": []
+        },
+        "previous_hash": "f8b02198e5feef14097fa52527802eaa639d76b875edd6c8b73ac540be3f0d2b",
+        "hash": "a35231305de995c5e608a71935f9a8833d9cedf41f58643b1b7a725810091361"
+    },
+    {
+        "index": 21,
+        "timestamp": 1779368649.6259332,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xa528e5c1a7a16cc526cd9b85f99122d89b40834fcfda0b88d8c8260dd213d386",
+            "level": "HIGH",
+            "score": 62,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "a35231305de995c5e608a71935f9a8833d9cedf41f58643b1b7a725810091361",
+        "hash": "8f1ee15e53451892400b1aa1fa97a589e7461a35a9f5c341cdeaedd44faaed99"
+    },
+    {
+        "index": 22,
+        "timestamp": 1779376235.3967667,
+        "data": {
+            "transaction": {
+                "type": "CASH_OUT",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0x3cbeb4427018220dbada807ec3ec97b507d6ca13b3dfdc70e97a56ed4f461d73",
+            "level": "CRITICAL",
+            "score": 89,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "8f1ee15e53451892400b1aa1fa97a589e7461a35a9f5c341cdeaedd44faaed99",
+        "hash": "5d6766c33ed24582b9edab073eb771445c85ece7e1c472a97136e40d6700ccb4"
+    },
+    {
+        "index": 23,
+        "timestamp": 1779376253.437191,
+        "data": {
+            "transaction": {
+                "type": "CASH_OUT",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0x73258fd9e3f1c412fcdbbae61252de29a5e223540b40178efb328a75ef226cc7",
+            "level": "MEDIUM",
+            "score": 45,
+            "reasons": [
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "5d6766c33ed24582b9edab073eb771445c85ece7e1c472a97136e40d6700ccb4",
+        "hash": "c12e761725ac18bfaa1b107152f775b1150bb78a65db8c9a97b0dacdfaf85955"
+    },
+    {
+        "index": 24,
+        "timestamp": 1779376449.5846355,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 500000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0xc96189d020f6e54631fc3310d6fa13e2be55fce78c4c46c82bb6ff0297148a48",
+            "level": "LOW",
+            "score": 30,
+            "reasons": [
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)"
+            ]
+        },
+        "previous_hash": "c12e761725ac18bfaa1b107152f775b1150bb78a65db8c9a97b0dacdfaf85955",
+        "hash": "772c9010f5307bdd93cd4fa913123b963b3b8c639c2eaccb6f9fc21be53a94b5"
+    },
+    {
+        "index": 25,
+        "timestamp": 1779376538.0713155,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 25000000.0,
+                "old_balance": 50000000.0
+            },
+            "hash": "0x0e0776eed8328cba98662e6854e25a82c0dc0471524ac45287279f64392f66cb",
+            "level": "HIGH",
+            "score": 74,
+            "reasons": [
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Cảnh báo] Thiết bị mới đăng nhập thực hiện ngay giao dịch giá trị lớn",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống",
+                "KMeans: Thuật toán phân cụm xếp dòng tiền hiện tại vào nhóm danh mục hành vi rủi ro"
+            ]
+        },
+        "previous_hash": "772c9010f5307bdd93cd4fa913123b963b3b8c639c2eaccb6f9fc21be53a94b5",
+        "hash": "decd63db4743962fc6f5e4c6d27f14436abc81915fb05554fe347152af2f5650"
+    },
+    {
+        "index": 26,
+        "timestamp": 1779376585.3662848,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 1000000.0,
+                "old_balance": 5000000.0
+            },
+            "hash": "0xa5da198672c4674c025e1be231f97ae83f30d286ba35610426c3c316f6a00f43",
+            "level": "LOW",
+            "score": 15,
+            "reasons": [
+                "Rule Engine: [Cảnh báo] Tài khoản ghi nhận liên tiếp nhiều lần đăng nhập lỗi (Nghi vấn Brute Force)"
+            ]
+        },
+        "previous_hash": "decd63db4743962fc6f5e4c6d27f14436abc81915fb05554fe347152af2f5650",
+        "hash": "93f28a569ab14a31605ceb15d112402d858af3232072afcabfc864890aeaab2d"
+    },
+    {
+        "index": 27,
+        "timestamp": 1779376629.5511403,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 10000000.0,
+                "old_balance": 50000000.0
+            },
+            "hash": "0xf5b5bfe12874ebc13c5894cd323e49efb23401ddfb32a03c86c00b986ddf01cb",
+            "level": "HIGH",
+            "score": 64,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "93f28a569ab14a31605ceb15d112402d858af3232072afcabfc864890aeaab2d",
+        "hash": "22427db9de6d9a716950e6f8751afb33f3d3d76d2ea0fa7e6248eb89c94d5342"
+    },
+    {
+        "index": 28,
+        "timestamp": 1779376663.9353766,
+        "data": {
+            "transaction": {
+                "type": "CASH_OUT",
+                "amount": 15000000.0,
+                "old_balance": 15000000.0
+            },
+            "hash": "0x3e351c76d59668502ee3cd0327ddc88fc08b9e1567cac1c32e4e6c85ff8ff087",
+            "level": "MEDIUM",
+            "score": 38,
+            "reasons": [
+                "Rule Engine: [Cảnh báo] Hành vi rút cạn kiệt số dư tài khoản về bằng 0 (Dấu hiệu tẩu tán tài sản)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "22427db9de6d9a716950e6f8751afb33f3d3d76d2ea0fa7e6248eb89c94d5342",
+        "hash": "161df5d16bb6b71903f7bfdf20061f7403f32098ff93296302ddb12aa4955647"
+    },
+    {
+        "index": 29,
+        "timestamp": 1779378733.4243147,
+        "data": {
+            "transaction": {
+                "type": "TRANSFER",
+                "amount": 50000.0,
+                "old_balance": 100000.0
+            },
+            "hash": "0xd1686d1f4d2da7ccee939427481f86a7203fe7e7d9f6ef22d1da31125fdd2e73",
+            "level": "CRITICAL",
+            "score": 100,
+            "reasons": [
+                "Rule Engine: [Nguy cấp] Phát hiện hành vi Impossible Travel (Vị trí địa lý thay đổi bất khả thi)",
+                "Rule Engine: [Rủi ro cao] Thiết bị lạ truy cập hệ thống cố tình sử dụng VPN/Proxy ẩn danh",
+                "Rule Engine: [Rủi ro cao] Tần suất phát lệnh giao dịch vượt ngưỡng (Dấu hiệu Spam/Bot tự động)",
+                "Isolation Forest: Mô hình hành vi giao dịch lệch chuẩn nghiêm trọng so với lịch sử hệ thống"
+            ]
+        },
+        "previous_hash": "161df5d16bb6b71903f7bfdf20061f7403f32098ff93296302ddb12aa4955647",
+        "hash": "ad326257dce02cb95db49cf2a25306362d9ea16bf0837f76ced2e06b93127ee0"
     }
 ]

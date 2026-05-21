@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - BlockGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #0b0f19;
+            --bg-card-left: #1e2535;
+            --bg-card-right: #181a1f;
+            --bg-feature: #263145;
+            --bg-input: #15161a;
+            --border-input: #333640;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-hover: #2563eb;
+            --btn-bg: #1e293b;
+            --btn-hover: #2a3b54;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            background-color: var(--bg-card-right);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Left Side */
+        .left-panel {
+            flex: 1;
+            background-color: var(--bg-card-left);
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-desc {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background-color: var(--bg-feature);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            background-color: #2a374c;
+        }
+
+        .feature-icon {
+            color: var(--accent-blue);
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .feature-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .feature-content p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Right Side */
+        .right-panel {
+            flex: 1;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .auth-desc {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-input);
+            color: var(--text-primary);
+            padding: 16px 16px 16px 48px;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--btn-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-input);
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--btn-hover);
+            border-color: #4b5563;
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .auth-link a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .auth-link a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                max-width: 500px;
+            }
+
+            .left-panel {
+                padding: 40px 30px;
+            }
+
+            .right-panel {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <h1 class="brand-title">BlockGuard AI</h1>
+            <p class="brand-desc">Hệ thống phát hiện giao dịch bất thường trên Ganache bằng AI.</p>
+
+            <div class="feature-card">
+                <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                    </path>
+                </svg>
+                <div class="feature-content">
+                    <h3>Phân tích giao dịch</h3>
+                    <p>AI tự động chấm điểm rủi ro và phát hiện bất thường.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                    </path>
+                </svg>
+                <div class="feature-content">
+                    <h3>Cảnh báo kịp thời</h3>
+                    <p>Thông báo khi phát hiện ví hoặc giao dịch đáng ngờ.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <h2 class="auth-title">Đăng Ký Tài Khoản</h2>
+            <p class="auth-desc">Tạo tài khoản để bắt đầu theo dõi ví test trên Ganache.</p>
+
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <input type="text" class="form-control" placeholder="Họ và tên" required>
+                </div>
+
+                <div class="form-group">
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <input type="email" class="form-control" placeholder="Email" required>
+                </div>
+
+                <div class="form-group">
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                        </path>
+                    </svg>
+                    <input type="password" class="form-control" placeholder="Mật khẩu" required>
+                </div>
+
+                <div class="form-group">
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                        </path>
+                    </svg>
+                    <input type="password" class="form-control" placeholder="Nhập lại mật khẩu" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Đăng Ký</button>
+            </form>
+
+            <p class="auth-link">
+                Đã có tài khoản? <a href="/">Đăng Nhập</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+
+</html>

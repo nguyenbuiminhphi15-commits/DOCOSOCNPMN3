@@ -6,7 +6,7 @@ import os
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.ledger_file = os.path.join(os.path.dirname(__file__), '..', 'ledger.json')
+        self.ledger_file = os.path.join(os.path.dirname(__file__), '..', '..', 'ledger.json')
         
         # Thử nạp sổ cái từ file (nếu server bị khởi động lại)
         if os.path.exists(self.ledger_file):

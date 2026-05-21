@@ -6,9 +6,9 @@ import numpy as np
 import hashlib
 import json
 import traceback # Thêm thư viện này để bắt và hiển thị lỗi chi tiết
-from app.dtos import TransactionInputDTO
-from app.repositories import ModelRepository
-from app.blockchain_engine import Blockchain
+from app.models.transaction_schema import TransactionInputDTO
+from app.repositories.repositories import ModelRepository
+from app.services.blockchain import Blockchain
 
 # Khởi tạo instance blockchain (nên để ở mức module để giữ state)
 my_blockchain = Blockchain()

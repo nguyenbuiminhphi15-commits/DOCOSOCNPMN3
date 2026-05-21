@@ -8,7 +8,7 @@ from web3 import Web3
 
 class ModelRepository:
     def __init__(self):
-        self.model_dir = os.path.join(os.path.dirname(__file__), '..', 'models')
+        self.model_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'models_data')
         
         # 1. Cấu hình cổng kết nối mạng Ganache của bạn
         self.w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:7545"))
