@@ -23,6 +23,12 @@ app.add_middleware(
 # Tích hợp bộ định tuyến Controller vào lõi FastAPI
 app.include_router(anti_fraud_router)
 
+# Mount thư mục KYC Wizard
+from fastapi.staticfiles import StaticFiles
+import os
+kyc_path = os.path.join(os.path.dirname(__file__), "..", "aml-kyc-wizard-app")
+app.mount("/kyc", StaticFiles(directory=kyc_path, html=True), name="kyc")
+
 from app.services.ai_engine import my_blockchain
 
 @app.get("/blockchain-ledger", tags=["Blockchain Explorer"])
