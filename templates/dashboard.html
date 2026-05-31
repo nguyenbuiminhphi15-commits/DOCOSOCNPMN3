@@ -1,0 +1,477 @@
+{% extends 'base.html' %}
+
+{% block title %}Tổng quan - HUTECH Secure QR{% endblock %}
+{% block page_title %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f4f6f8;
+    }
+    .sepay-card {
+        background: #fff;
+        border-radius: 6px;
+        padding: 20px 24px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        border: 1px solid rgba(0,0,0,0.04);
+        height: 100%;
+        position: relative;
+    }
+    .sepay-card-title {
+        font-size: 13px;
+        color: #4b5563;
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    .sepay-card-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1f2937;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .icon-circle-blue {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #e0f2fe;
+        color: #3b82f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+    .section-header {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 20px;
+    }
+    
+    /* RECENT TRANSACTIONS */
+    .tx-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .tx-item:last-child {
+        border-bottom: none;
+    }
+    .tx-icon-col {
+        margin-right: 12px;
+        padding-top: 2px;
+    }
+    .tx-icon-ring {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid #3b82f6;
+        display: inline-block;
+    }
+    .tx-amount {
+        color: #10b981;
+        font-weight: 600;
+        font-size: 13px;
+        text-align: right;
+    }
+    .tx-time {
+        font-size: 11px;
+        color: #9ca3af;
+        text-align: right;
+        margin-top: 4px;
+    }
+    .tx-account {
+        font-size: 12px;
+        font-weight: 600;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .tx-id-date {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 4px;
+    }
+
+    /* CHART PLACEHOLDER (CSS STATIC CHART) */
+    .css-chart-container {
+        height: 250px;
+        border-bottom: 1px solid #e5e7eb;
+        border-left: 1px solid #e5e7eb;
+        position: relative;
+        margin-top: 20px;
+        margin-bottom: 30px;
+    }
+    .css-grid-line {
+        position: absolute;
+        width: 100%;
+        border-bottom: 1px solid #f3f4f6;
+        left: 0;
+    }
+    .css-grid-label {
+        position: absolute;
+        left: -50px;
+        font-size: 10px;
+        color: #9ca3af;
+        transform: translateY(-50%);
+    }
+    .css-bar-group {
+        position: absolute;
+        bottom: 0;
+        left: 40%; /* Month 5 position */
+        display: flex;
+        gap: 4px;
+        align-items: flex-end;
+        height: 100%;
+    }
+    .css-bar {
+        width: 12px;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+    }
+    .css-bar-in { background-color: #3b82f6; height: 70%; }
+    .css-bar-out { background-color: #f59e0b; height: 0%; }
+    .css-bar-balance { background-color: #10b981; height: 70%; }
+    
+    .x-axis-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-left: 0;
+        padding-top: 10px;
+        font-size: 10px;
+        color: #9ca3af;
+    }
+    .chart-legend {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        font-size: 11px;
+        color: #6b7280;
+        margin-top: 10px;
+    }
+    .legend-dot {
+        width: 8px;
+        height: 8px;
+        display: inline-block;
+        border-radius: 1px;
+        margin-right: 5px;
+    }
+
+    /* STATS GRID */
+    .stat-grid-title {
+        font-size: 11px;
+        color: #6b7280;
+        margin-bottom: 6px;
+    }
+    .stat-grid-value {
+        font-size: 16px;
+        font-weight: 500;
+        color: #1f2937;
+    }
+    
+    /* TOP ACCOUNTS TABLE */
+    .top-accounts-table th {
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 500;
+        border-bottom: 1px solid #f3f4f6;
+        padding-bottom: 10px;
+    }
+    .top-accounts-table td {
+        font-size: 13px;
+        color: #4b5563;
+        padding: 15px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+</style>
+{% endblock %}
+
+{% block top_header_extra %}
+<div class="d-flex align-items-center gap-2">
+    <a href="/dashboard" class="btn btn-sm btn-outline-info text-primary" style="background: #e0f2fe; border-color: #bae6fd;"><i class="bi bi-arrow-repeat me-1"></i> Làm mới</a>
+    <div class="dropdown">
+        <input type="text" id="dashboard-daterange" class="form-control form-control-sm text-muted" 
+               style="width: 210px; cursor: pointer; background: white;" 
+               value="{{ date_label }}" readonly data-bs-toggle="dropdown" aria-expanded="false">
+        <ul class="dropdown-menu shadow-sm border-0" style="width: 210px; padding: 0; font-size: 13px;">
+            <li><a class="dropdown-item py-2" href="#" onclick="applyDateFilter('today')">Hôm nay</a></li>
+            <li><a class="dropdown-item py-2" href="#" onclick="applyDateFilter('yesterday')">Hôm qua</a></li>
+            <li><a class="dropdown-item py-2" href="#" onclick="applyDateFilter('7days')">7 ngày qua</a></li>
+            <li><a class="dropdown-item py-2" href="#" onclick="applyDateFilter('30days')">30 ngày qua</a></li>
+            <li><a class="dropdown-item py-2" href="#" onclick="applyDateFilter('this_month')">Tháng này</a></li>
+            <li><a class="dropdown-item py-2" href="#" onclick="applyDateFilter('last_month')">Tháng trước</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- ROW 1: 4 CARDS -->
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="sepay-card">
+            <div class="sepay-card-title">
+                <span>Số dư hiện tại <i class="bi bi-question-circle text-muted ms-1 fs-6"></i></span>
+                <div class="icon-circle-blue"><i class="bi bi-wallet2"></i></div>
+            </div>
+            <div class="sepay-card-value">
+                0 <i class="bi bi-eye-slash text-muted fs-5 cursor-pointer"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="sepay-card">
+            <div class="sepay-card-title">
+                <span>Tiền vào <i class="bi bi-question-circle text-muted ms-1 fs-6"></i></span>
+                <div class="icon-circle-blue"><i class="bi bi-arrow-right"></i></div>
+            </div>
+            <div class="sepay-card-value">
+                {{ "{:,.0f}".format(stats.total_revenue).replace(',', '.') }} đ
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="sepay-card">
+            <div class="sepay-card-title">
+                <span>Tiền ra <i class="bi bi-question-circle text-muted ms-1 fs-6"></i></span>
+                <div class="icon-circle-blue"><i class="bi bi-arrow-left"></i></div>
+            </div>
+            <div class="sepay-card-value">
+                0 đ
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="sepay-card">
+            <div class="sepay-card-title">
+                <span>Balance (Số dư ròng) <i class="bi bi-question-circle text-muted ms-1 fs-6"></i></span>
+                <div class="icon-circle-blue"><i class="bi bi-activity"></i></div>
+            </div>
+            <div class="sepay-card-value">
+                {{ "{:,.0f}".format(stats.total_revenue).replace(',', '.') }} đ
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROW 2: CHART & RECENT TRANSACTIONS -->
+<div class="row g-3 mb-3">
+    <!-- CHART -->
+    <div class="col-md-8">
+        <div class="sepay-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="section-header mb-0">Dòng tiền hằng tháng</div>
+                <i class="bi bi-list text-muted fs-5"></i>
+            </div>
+            
+            <div class="css-chart-container">
+                <div class="css-grid-line" style="bottom: 100%;"><span class="css-grid-label">{{ "{:,.0f}".format(max_chart_val).replace(',', '.') }} đ</span></div>
+                <div class="css-grid-line" style="bottom: 80%;"><span class="css-grid-label">{{ "{:,.0f}".format(max_chart_val * 0.8).replace(',', '.') }} đ</span></div>
+                <div class="css-grid-line" style="bottom: 60%;"><span class="css-grid-label">{{ "{:,.0f}".format(max_chart_val * 0.6).replace(',', '.') }} đ</span></div>
+                <div class="css-grid-line" style="bottom: 40%;"><span class="css-grid-label">{{ "{:,.0f}".format(max_chart_val * 0.4).replace(',', '.') }} đ</span></div>
+                <div class="css-grid-line" style="bottom: 20%;"><span class="css-grid-label">{{ "{:,.0f}".format(max_chart_val * 0.2).replace(',', '.') }} đ</span></div>
+                <div class="css-grid-line" style="bottom: 0%;"><span class="css-grid-label">0 đ</span></div>
+                
+                <div class="css-bar-group">
+                    {% set bar_height = (stats.total_revenue / max_chart_val * 100) if max_chart_val > 0 else 0 %}
+                    <div class="css-bar css-bar-in" style="height: {{ bar_height }}%;"></div>
+                    <div class="css-bar css-bar-out" style="height: 0%;"></div>
+                    <div class="css-bar css-bar-balance" style="height: {{ bar_height }}%;"></div>
+                </div>
+            </div>
+            <div class="x-axis-labels">
+                <span>Tháng 1</span><span>Tháng 2</span><span>Tháng 3</span><span>Tháng 4</span>
+                <span class="text-dark fw-bold">Tháng 5</span><span>Tháng 6</span><span>Tháng 7</span>
+                <span>Tháng 8</span><span>Tháng 9</span><span>Tháng 10</span><span>Tháng 11</span><span>Tháng 12</span>
+            </div>
+            <div class="chart-legend">
+                <span><i class="legend-dot" style="background: #3b82f6;"></i> Tiền vào</span>
+                <span><i class="legend-dot" style="background: #f59e0b;"></i> Tiền ra</span>
+                <span><i class="legend-dot" style="background: #10b981;"></i> Balance</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- RECENT TRANSACTIONS -->
+    <div class="col-md-4">
+        <div class="sepay-card">
+            <div class="section-header">Giao dịch gần đây</div>
+            
+            <div class="tx-list mt-3">
+                {% for tx in recent_txs %}
+                <div class="tx-item">
+                    <div class="d-flex">
+                        <div class="tx-icon-col">
+                            <span class="tx-icon-ring"></span>
+                        </div>
+                        <div>
+                            <div class="tx-account"><i class="bi bi-flower1 text-warning"></i> {{ tx.account }}</div>
+                            <div class="tx-id-date">{{ tx.id[:10] }}... - {{ tx.created_at }}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tx-amount">+ {{ "{:,.0f}".format(tx.amount).replace(',', '.') }} đ</div>
+                        <div class="tx-time" data-time="{{ tx.created_at }}">Vừa xong</div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if not recent_txs %}
+                <div class="text-center text-muted py-4 small">Chưa có giao dịch nào</div>
+                {% endif %}
+            </div>
+            <div class="text-center mt-3">
+                <a href="/transactions" class="text-primary text-decoration-none" style="font-size: 12px;">Xem thêm <i class="bi bi-chevron-right"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROW 3: STATS & TOP ACCOUNTS -->
+<div class="row g-3 pb-5">
+    <!-- STATS MONTH -->
+    <div class="col-md-7">
+        <div class="sepay-card">
+            <div class="section-header">Thống kê giao dịch <i class="bi bi-question-circle text-muted ms-1 fs-6"></i></div>
+            
+            <div class="text-center my-4">
+                <div class="text-muted" style="font-size: 12px; margin-bottom: 4px;">Tổng thu kỳ này</div>
+                <div style="font-size: 28px; font-weight: 600; color: #1f2937;">{{ "{:,.0f}".format(stats.total_revenue).replace(',', '.') }} đ</div>
+                <div class="badge rounded-pill mt-2" style="background-color: #3b82f6; font-size: 10px; font-weight: 500; padding: 4px 10px;">
+                    Trung bình: {{ "{:,.0f}".format(stats.avg_revenue).replace(',', '.') }} đ/ giao dịch
+                </div>
+            </div>
+            
+            <div class="row text-center mt-5">
+                <div class="col-4 mb-4">
+                    <div class="stat-grid-title">Số lượng giao dịch</div>
+                    <div class="stat-grid-value">{{ stats.tx_count }}</div>
+                </div>
+                <div class="col-4 mb-4">
+                    <div class="stat-grid-title">Giao dịch tiền vào</div>
+                    <div class="stat-grid-value">{{ stats.tx_count }}</div>
+                </div>
+                <div class="col-4 mb-4">
+                    <div class="stat-grid-title">Giao dịch tiền ra</div>
+                    <div class="stat-grid-value">0</div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-grid-title">Chat đã bắn</div>
+                    <div class="stat-grid-value">0</div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-grid-title">WebHooks đã bắn</div>
+                    <div class="stat-grid-value">0</div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-grid-title">WebHooks thành công</div>
+                    <div class="stat-grid-value">{{ stats.tx_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TOP ACCOUNTS -->
+    <div class="col-md-5">
+        <div class="sepay-card">
+            <div class="section-header">Top tiền vào theo tài khoản phụ</div>
+            
+            <table class="table table-borderless top-accounts-table mt-4 w-100">
+                <thead>
+                    <tr>
+                        <th class="text-start">Tài khoản phụ</th>
+                        <th class="text-end">Tiền vào</th>
+                        <th class="text-end">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-start">
+                            <span style="display:inline-block; width:10px; height:10px; background:#3b82f6; margin-right:8px;"></span>
+                            <span class="fw-medium text-secondary">96247HOATHUI</span>
+                        </td>
+                        <td class="text-end text-secondary">{{ "{:,.0f}".format(stats.total_revenue).replace(',', '.') }} đ</td>
+                        <td class="text-end" style="color: #10b981;">100 %</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function formatDate(date) {
+        const d = new Date(date);
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        const year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+    function applyDateFilter(rangeType) {
+        const today = new Date();
+        let start = new Date();
+        let end = new Date();
+
+        switch(rangeType) {
+            case 'today':
+                break;
+            case 'yesterday':
+                start.setDate(today.getDate() - 1);
+                end.setDate(today.getDate() - 1);
+                break;
+            case '7days':
+                start.setDate(today.getDate() - 6);
+                break;
+            case '30days':
+                start.setDate(today.getDate() - 29);
+                break;
+            case 'this_month':
+                start.setDate(1);
+                end.setMonth(today.getMonth() + 1, 0);
+                break;
+            case 'last_month':
+                start.setMonth(today.getMonth() - 1, 1);
+                end.setMonth(today.getMonth(), 0);
+                break;
+        }
+
+        window.location.href = `/dashboard?start_date=${formatDate(start)}&end_date=${formatDate(end)}`;
+    }
+
+    // Cập nhật relative time cho danh sách giao dịch
+    document.addEventListener("DOMContentLoaded", function() {
+        const now = new Date();
+        document.querySelectorAll('.tx-time').forEach(el => {
+            const timeStr = el.getAttribute('data-time');
+            if(!timeStr) return;
+            let parts = timeStr.split(/[\s/:]/);
+            if (parts.length >= 6) {
+                const txTime = new Date(parts[2], parts[1]-1, parts[0], parts[3], parts[4], parts[5]);
+                const diffMs = now - txTime;
+                const diffMins = Math.floor(diffMs / 60000);
+                
+                if (diffMins < 1 || isNaN(diffMins)) {
+                    el.innerText = "Vừa xong";
+                } else if (diffMins < 60) {
+                    el.innerText = diffMins + " phút trước";
+                } else if (diffMins < 1440) {
+                    el.innerText = Math.floor(diffMins / 60) + " giờ trước";
+                } else {
+                    el.innerText = Math.floor(diffMins / 1440) + " ngày trước";
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

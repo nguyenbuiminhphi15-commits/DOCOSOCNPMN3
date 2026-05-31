@@ -1,0 +1,1 @@
+import sys; sys.path.append('.'); from models.database_model import DatabaseModel; db = DatabaseModel(); conn = db.get_connection(); cursor = conn.cursor(); cursor.execute("SELECT * FROM QR_Links WHERE qr_id='HUTECH_M03XAX'"); print(cursor.fetchone())

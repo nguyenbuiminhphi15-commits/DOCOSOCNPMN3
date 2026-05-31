@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Cấu hình chung - HUTECH Secure QR{% endblock %}
+{% block page_title %}Ngân hàng / <span class="text-warning"><i class="bi bi-star-fill"></i> <span id="breadcrumb-acc">8898995935</span></span> / Cấu hình chung{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Cấu hình chung -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center border-bottom pb-3 mb-4">
+                    <i class="bi bi-gear text-secondary fs-3 me-3"></i>
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1">Cấu hình chung</h5>
+                        <div class="text-muted small">Tùy chỉnh các thiết lập và tính năng cho tài khoản ngân hàng.</div>
+                    </div>
+                </div>
+
+                <div class="form-check form-switch mb-4 ps-0">
+                    <div class="d-flex align-items-start">
+                        <div class="form-check form-switch" style="padding-left: 2.5em;">
+                            <input class="form-check-input" type="checkbox" id="syncTrans" checked style="width: 40px; height: 20px;">
+                        </div>
+                        <div class="ms-2">
+                            <label class="form-check-label fw-bold text-dark" for="syncTrans">Đồng bộ giao dịch</label>
+                            <div class="text-muted small mt-1">Hệ thống sẽ tự động đồng bộ các giao dịch mới từ tài khoản ngân hàng của bạn vào SePay</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 border rounded bg-light bg-opacity-50">
+                    <!-- Đồng bộ giao dịch tiền vào -->
+                    <div class="form-check form-switch mb-4 ps-0">
+                        <div class="d-flex align-items-start">
+                            <div class="form-check form-switch" style="padding-left: 2.5em;">
+                                <input class="form-check-input" type="checkbox" id="syncIn" checked style="width: 40px; height: 20px;">
+                            </div>
+                            <div class="ms-2">
+                                <label class="form-check-label text-dark" for="syncIn">Đồng bộ giao dịch tiền vào</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đồng bộ giao dịch tiền ra -->
+                    <div class="form-check form-switch mb-4 ps-0">
+                        <div class="d-flex align-items-start">
+                            <div class="form-check form-switch" style="padding-left: 2.5em;">
+                                <input class="form-check-input" type="checkbox" id="syncOut" disabled style="width: 40px; height: 20px;">
+                            </div>
+                            <div class="ms-2">
+                                <label class="form-check-label text-muted" for="syncOut">Đồng bộ giao dịch tiền ra</label>
+                                <div class="text-muted small mt-1">Ngân hàng này không hỗ trợ đồng bộ giao dịch tiền ra</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đồng bộ số dư -->
+                    <div class="form-check form-switch mb-4 ps-0">
+                        <div class="d-flex align-items-start">
+                            <div class="form-check form-switch" style="padding-left: 2.5em;">
+                                <input class="form-check-input" type="checkbox" id="syncBal" disabled style="width: 40px; height: 20px;">
+                            </div>
+                            <div class="ms-2">
+                                <label class="form-check-label text-muted" for="syncBal">Đồng bộ số dư</label>
+                                <div class="text-muted small mt-1">Ngân hàng này không hỗ trợ đồng bộ số dư</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keyword -->
+                    <div class="mt-4">
+                        <label class="form-label text-dark fw-bold mb-2">Đồng bộ giao dịch theo từ khóa</label>
+                        <input type="text" class="form-control mb-2" placeholder="Nhập từ khóa">
+                        <div class="text-muted small lh-base">
+                            Chỉ đồng bộ giao dịch mà nội dung thanh toán có một trong các từ khóa mà bạn khai báo. Ngược lại, các giao dịch không có nội dung trên sẽ không được đồng bộ. 
+                            <span class="text-danger">Chỉ sử dụng tùy chọn này nếu QR của bạn đã chèn sẵn nội dung chỉ định. Bỏ qua cấu hình nếu bạn không rõ về tính năng trên này.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Xóa dữ liệu -->
+        <div class="card border-0 shadow-sm mt-4 mb-5">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-exclamation-triangle text-danger fs-5 me-2"></i>
+                    <h5 class="fw-bold text-danger mb-0">Xóa dữ liệu</h5>
+                </div>
+                <div class="text-dark mb-4">Không có giao dịch phát sinh từ tài khoản ngân hàng này trên SePay.</div>
+                <button class="btn btn-danger bg-opacity-75" style="background-color: #e48181; border: none;">
+                    <i class="bi bi-trash3 me-1"></i> Xóa tất cả giao dịch
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let bankAcc = localStorage.getItem('bank_account');
+    if (bankAcc) {
+        document.getElementById('breadcrumb-acc').innerText = bankAcc;
+    }
+});
+</script>
+{% endblock %}

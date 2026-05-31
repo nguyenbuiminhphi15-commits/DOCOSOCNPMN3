@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Tài khoản - HUTECH Secure QR{% endblock %}
+{% block page_title %}Tài khoản{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* SIDE MENU */
+    .page-sidebar { width: 250px; padding: 20px; }
+    .menu-item { display: block; padding: 12px 15px; color: #495057; text-decoration: none; border-radius: 6px; margin-bottom: 5px; font-size: 14px; border: 1px solid transparent; }
+    .menu-item:hover { background-color: #f1f3f5; }
+    .menu-item.active { background-color: #e2e8f0; color: #0d6efd; font-weight: 500; border-color: #dee2e6; background: #e0edff; }
+    
+    /* ACCOUNT CARD */
+    .account-card { background: white; border: 1px solid #e9ecef; border-radius: 8px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+    .avatar-lg { width: 100px; height: 100px; border-radius: 50%; font-size: 36px; display: flex; align-items: center; justify-content: center; background-color: #f8d7da; color: #dc3545; margin: 0 auto 15px auto; }
+    
+    .info-section { border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-top: 30px; }
+    .info-title { font-size: 18px; color: #495057; margin-bottom: 20px; }
+    
+    .info-row { display: flex; margin-bottom: 15px; font-size: 14px; }
+    .info-label { width: 200px; color: #6c757d; }
+    .info-value { color: #212529; font-weight: 500; }
+    
+    .badge-active { background-color: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex" style="min-height: calc(100vh - 60px);">
+    <div class="page-sidebar border-end bg-white">
+        <a href="#" class="menu-item active"><i class="bi bi-person me-2"></i> Tổng quan</a>
+        <a href="#" class="menu-item"><i class="bi bi-key me-2"></i> Đổi mật khẩu</a>
+        <a href="#" class="menu-item"><i class="bi bi-code-slash me-2"></i> Ứng dụng OAuth</a>
+        <a href="#" class="menu-item"><i class="bi bi-hdd-stack me-2"></i> Ứng dụng đã ủy quyền</a>
+    </div>
+    
+    <div class="flex-grow-1 p-4">
+        <div class="account-card max-w-4xl mx-auto">
+            <div class="text-center">
+                <div class="avatar-lg">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <h4 class="fw-bold" id="profileNameDisplay">Nguyễn Đình Hòa</h4>
+                <p class="text-muted small">qskaitomz@gmail.com</p>
+                <button class="btn btn-outline-warning btn-sm mt-2"><i class="bi bi-pencil me-1"></i> Đổi thông tin</button>
+            </div>
+            
+            <div class="info-section">
+                <h5 class="info-title">Thông tin tài khoản</h5>
+                
+                <div class="info-row">
+                    <div class="info-label">Họ và đệm</div>
+                    <div class="info-value" id="profileLastNameDisplay">Nguyễn Đình</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Tên</div>
+                    <div class="info-value" id="profileFirstNameDisplay">Hòa</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Tên đăng nhập</div>
+                    <div class="info-value">0987273621</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Mật khẩu</div>
+                    <div class="info-value">********</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Ngày tạo</div>
+                    <div class="info-value">2026-05-21 23:05:31</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Trạng thái</div>
+                    <div class="info-value"><span class="badge-active">Kích hoạt</span></div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h5 class="info-title">Thuộc công ty</h5>
+                <ul>
+                    <li class="text-secondary" id="profileCompanyDisplay">Nguyễn Đình Hòa</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let registeredName = localStorage.getItem('registered_name'); 
+        if (registeredName) {
+            document.getElementById('profileNameDisplay').innerText = registeredName;
+            document.getElementById('profileCompanyDisplay').innerText = registeredName;
+            let nameParts = registeredName.trim().split(' ');
+            let lastWord = nameParts.pop();
+            let firstWords = nameParts.join(' ');
+            
+            document.getElementById('profileLastNameDisplay').innerText = firstWords;
+            document.getElementById('profileFirstNameDisplay').innerText = lastWord;
+        }
+    });
+</script>
+{% endblock %}

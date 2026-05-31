@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block title %}Chi tiết ngân hàng - HUTECH Secure QR{% endblock %}
+{% block page_title %}Ngân hàng / <span id="breadcrumb-acc" class="text-warning"><i class="bi bi-star-fill"></i> </span>{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Styling for the card */
+    .bank-card-detail {
+        background: linear-gradient(135deg, #f8f9fa 0%, #fff8e1 100%);
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .bank-card-detail h3 {
+        letter-spacing: 2px;
+        font-family: monospace;
+        font-size: 24px;
+        margin-top: 40px;
+    }
+    .grid-actions {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+    }
+    .action-item {
+        padding: 20px 10px;
+        text-align: center;
+        border-right: 1px solid #e9ecef;
+        border-bottom: 1px solid #e9ecef;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .action-item:hover {
+        background: #f8f9fa;
+    }
+    .action-item:nth-child(4n) {
+        border-right: none;
+    }
+    .action-item:nth-child(n+5) {
+        border-bottom: none;
+    }
+    .action-icon {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Col: Card -->
+    <div class="col-md-4">
+        <div class="bank-card-detail mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-star-fill text-warning fs-4 me-2"></i> 
+                    <span class="fw-bold" id="card-bank-name">BIDV</span>
+                </div>
+            </div>
+            <div class="mt-2">
+                <span class="badge bg-light text-dark border"><i class="bi bi-lightning-charge-fill text-warning"></i> API Banking</span>
+            </div>
+            
+            <h3 class="fw-bold text-dark mb-1" id="card-acc-number">8898995935</h3>
+            <div class="text-muted fw-bold" style="letter-spacing: 1px; font-size: 14px;" id="card-acc-name">NGUYEN DINH HOA</div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <span class="badge bg-secondary bg-opacity-10 text-secondary border"><i class="bi bi-wallet2"></i> Chưa hỗ trợ số dư</span>
+                <span class="badge bg-primary bg-opacity-10 text-primary border"><i class="bi bi-1-circle"></i> Tài khoản ảo (VA) <i class="bi bi-chevron-down"></i></span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Col: Actions Grid -->
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold text-secondary mb-0" id="header-acc-name">HÒA THÚI <i class="bi bi-pencil-fill ms-2" style="font-size: 14px; color: #adb5bd; cursor: pointer;" onclick="editAlias()"></i></h5>
+        </div>
+        <div class="grid-actions bg-white">
+            <div class="action-item">
+                <div class="action-icon text-primary"><i class="bi bi-credit-card-2-front"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Tài khoản ảo (VA)</div>
+            </div>
+            <div class="action-item" onclick="window.location.href='/qr-generator'">
+                <div class="action-icon text-info"><i class="bi bi-qr-code-scan"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Tạo QR thanh toán</div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon text-secondary"><i class="bi bi-clock-history"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Lịch sử giao dịch</div>
+            </div>
+            <div class="action-item" onclick="window.location.href='/bank_settings'">
+                <div class="action-icon text-secondary"><i class="bi bi-gear"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Cấu hình chung</div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon text-primary"><i class="bi bi-telegram"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Chia sẻ BĐSD qua Telegram</div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon text-primary"><i class="bi bi-send"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Chia sẻ BĐSD qua Lark</div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon" style="color: #665cac;"><i class="bi bi-telephone-fill"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Chia sẻ BĐSD qua Viber</div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon text-primary"><i class="bi bi-phone"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Chia sẻ BĐSD qua Mobile App</div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon text-danger"><i class="bi bi-x-circle"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Hủy liên kết tài khoản</div>
+            </div>
+            <div class="action-item">
+                <div class="action-icon text-warning"><i class="bi bi-lightning-charge"></i></div>
+                <div class="fw-semibold text-dark" style="font-size: 13px;">Tích hợp Webhook</div>
+            </div>
+        </div>
+        <div class="text-center mt-2">
+            <button class="btn btn-sm bg-white border shadow-sm px-4">Xem thêm <i class="bi bi-chevron-down"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4 border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h5 class="mb-0 text-secondary fw-bold">Tài khoản ảo (VA)</h5>
+        <button class="btn btn-primary btn-sm px-3 fw-bold" onclick="addVA()"><i class="bi bi-plus"></i> Thêm VA</button>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-3">
+            <div class="d-flex align-items-center text-muted" style="font-size: 14px;">
+                Xem <select class="form-select form-select-sm mx-2" style="width: 70px;"><option>10</option></select> mục
+            </div>
+            <div class="d-flex align-items-center text-muted" style="font-size: 14px;">
+                Tìm: <input type="text" class="form-control form-control-sm ms-2" style="width: 200px;">
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle" style="font-size: 14px;">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th>ID <i class="bi bi-arrow-down-up" style="font-size: 10px; opacity: 0.5;"></i></th>
+                        <th>Số VA <i class="bi bi-arrow-down-up" style="font-size: 10px; opacity: 0.5;"></i></th>
+                        <th>Trạng thái <i class="bi bi-arrow-down-up" style="font-size: 10px; opacity: 0.5;"></i></th>
+                        <th>Tên gợi nhớ <i class="bi bi-arrow-down-up" style="font-size: 10px; opacity: 0.5;"></i></th>
+                        <th>Tạo lúc <i class="bi bi-arrow-down-up" style="font-size: 10px; opacity: 0.5;"></i></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-muted">140382</td>
+                        <td><a href="#" class="text-primary text-decoration-none fw-bold" id="table-va-number">96247HOATHUI</a> <i class="bi bi-check-circle-fill text-primary" style="font-size: 12px;"></i></td>
+                        <td><span class="text-success fw-bold" style="font-size: 12px;">Hoạt động</span></td>
+                        <td class="text-muted">HÒA THÚI</td>
+                        <td class="text-muted">2026-05-30 00:53:24</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-warning py-0 px-2" style="font-size: 12px;"><i class="bi bi-pencil"></i> Sửa</button>
+                            <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 12px;"><i class="bi bi-slash-circle"></i> Vô hiệu hoá</button>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 12px;"><i class="bi bi-trash"></i> Xóa</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="text-muted" style="font-size: 13px;">Đang xem 1 đến 1 trong tổng số 1 mục</div>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#">Tiếp</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4 mb-5">
+    <button class="btn btn-outline-primary rounded-pill bg-white shadow-sm"><i class="bi bi-question-circle"></i> Trợ giúp về Tài khoản ngân hàng</button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let bankAcc = localStorage.getItem('bank_account');
+    let bankCode = localStorage.getItem('bank_code');
+    
+    if (bankAcc) {
+        document.getElementById('breadcrumb-acc').innerHTML = `<i class="bi bi-star-fill"></i> ` + bankAcc;
+        document.getElementById('card-acc-number').innerText = bankAcc;
+        document.getElementById('table-va-number').innerText = bankAcc;
+        if(bankCode) {
+            document.getElementById('card-bank-name').innerText = bankCode;
+        }
+    }
+});
+
+function editAlias() {
+    Swal.fire({
+        title: '<div class="text-start fs-5 text-dark">Sửa tài khoản ngân hàng</div>',
+        html: `
+            <div class="text-start mt-4">
+                <label class="form-label text-muted mb-2">Tên gợi nhớ</label>
+                <input type="text" id="swal-alias" class="form-control" value="HÒA THÚI">
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Lưu',
+        cancelButtonText: 'Hủy',
+        confirmButtonColor: '#4285f4',
+        cancelButtonColor: '#fff',
+        customClass: {
+            cancelButton: 'text-dark border',
+            popup: 'rounded-4'
+        },
+        preConfirm: () => {
+            return document.getElementById('swal-alias').value;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('header-acc-name').innerHTML = result.value + ' <i class="bi bi-pencil-fill ms-2" style="font-size: 14px; color: #adb5bd; cursor: pointer;" onclick="editAlias()"></i>';
+            Swal.fire('Thành công', 'Đã cập nhật tên gợi nhớ', 'success');
+        }
+    });
+}
+
+function addVA() {
+    let bankAcc = localStorage.getItem('bank_account') || '';
+    let defaultTail = bankAcc.replace(/[^0-9]/g, '').substring(0, 5) || '96247';
+
+    Swal.fire({
+        title: '<div class="text-start fs-5 fw-bold text-dark">Thêm tài khoản ảo (VA)</div>',
+        html: `
+            <div class="text-start mt-4" style="font-size: 14px;">
+                <label class="form-label text-muted mb-1 fw-bold">Số VA <span class="text-danger">*</span></label>
+                <div class="text-muted mb-2" style="font-size: 12px;">Số VA chỉ chứa các chữ số và chữ cái in hoa, giới hạn độ dài tối đa 19 ký tự.</div>
+                <div class="input-group mb-4">
+                    <input type="text" class="form-control bg-light" value="${defaultTail}" readonly style="max-width: 80px;">
+                    <input type="text" id="swal-new-va" class="form-control" placeholder="">
+                    <button class="btn btn-outline-secondary" type="button"><i class="bi bi-magic"></i></button>
+                </div>
+                
+                <label class="form-label text-muted mb-1 fw-bold">Tên gợi nhớ</label>
+                <input type="text" id="swal-va-alias" class="form-control mb-4">
+                
+                <label class="form-label text-muted mb-1 fw-bold">Xác thực OTP <span class="text-danger">*</span></label>
+                <div class="text-muted mb-2" style="font-size: 12px;">Nhấn vào "Lấy mã OTP" để yêu cầu mã xác nhận từ phía ngân hàng.</div>
+                <div class="input-group mb-2">
+                    <input type="text" id="swal-otp" class="form-control" placeholder="######">
+                    <button class="btn btn-success" type="button" onclick="this.innerText='Đã gửi OTP'">Lấy OTP</button>
+                </div>
+            </div>
+        `,
+        width: 600,
+        showCancelButton: true,
+        confirmButtonText: 'Tạo VA',
+        cancelButtonText: 'Hủy',
+        confirmButtonColor: '#4285f4',
+        cancelButtonColor: '#fff',
+        customClass: {
+            cancelButton: 'text-dark border',
+            popup: 'rounded-4'
+        },
+        preConfirm: () => {
+            const va = document.getElementById('swal-new-va').value;
+            const otp = document.getElementById('swal-otp').value;
+            if (!otp) {
+                Swal.showValidationMessage('Vui lòng nhập mã OTP!');
+            }
+            return { va: va, otp: otp }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire('Thành công', 'Đã thêm tài khoản ảo', 'success');
+        }
+    });
+}
+</script>
+{% endblock %}

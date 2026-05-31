@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}Cấu hình Hệ thống - HUTECH Secure QR{% endblock %}
+{% block page_title %}⚙️ Cấu hình Hệ thống{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto mt-4">
+        
+        <!-- THÊM API MỚI -->
+        <div class="card shadow-sm border-0 mb-4" style="border-top: 4px solid #0dcaf0; border-radius: 8px;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle text-info me-2"></i> Thêm API Key mới</h5>
+                <p class="text-muted small mb-4">Nhập Token lấy từ my.sepay.vn để kết nối hệ thống.</p>
+                
+                <div class="d-flex gap-2">
+                    <input type="password" id="adminTokenInput" class="form-control bg-light" placeholder="Nhập API Token...">
+                    <button onclick="addToken()" class="btn btn-info text-white fw-bold px-4 flex-shrink-0"><i class="bi bi-plus me-1"></i> Thêm mới</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DANH SÁCH API -->
+        <div class="mb-3">
+            <input type="text" class="form-control rounded-pill bg-light border-0" placeholder="🔍 Tìm API key theo tên hoặc token..." style="max-width: 350px;">
+        </div>
+
+        {% for token_data in tokens %}
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 8px;">
+            <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="fw-bold text-dark">{{ token_data.name }}</span>
+                        {% if token_data.status == 'ACTIVE' %}
+                            <span class="badge bg-success-subtle text-success rounded-pill px-2" style="font-size: 11px;"><i class="bi bi-circle-fill me-1" style="font-size: 6px;"></i>Hoạt động</span>
+                        {% else %}
+                            <span class="badge bg-danger-subtle text-danger rounded-pill px-2" style="font-size: 11px;"><i class="bi bi-circle-fill me-1" style="font-size: 6px;"></i>Tạm khóa</span>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-danger font-monospace" style="font-size: 13px;">
+                            {{ token_data.token[:8] }}****{{ token_data.token[-8:] if token_data.token|length > 16 else '****' }}
+                        </span>
+                        <button class="btn btn-sm btn-light p-1" onclick="copyToken('{{ token_data.token }}')" title="Sao chép">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-warning btn-sm px-2" onclick="openEditModal({{ token_data.id }}, '{{ token_data.name }}', '{{ token_data.status }}')" title="Sửa">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm px-2" onclick="deleteToken({{ token_data.id }})" title="Xóa">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="text-center mt-5">
+            <button class="btn btn-outline-secondary rounded-pill px-4"><i class="bi bi-question-circle me-1"></i> Trợ giúp về API</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL SỬA API -->
+<div class="modal fade" id="editApiModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h6 class="modal-title fw-bold">Sửa API</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editTokenId">
+                <input type="hidden" id="newTokenValue">
+                
+                <div class="mb-4">
+                    <label class="form-label text-muted small mb-1">Tên API</label>
+                    <input type="text" id="editTokenName" class="form-control" placeholder="Tên gợi nhớ...">
+                    <div class="form-text" style="font-size: 11px;">Đặt tên gợi nhớ để phân biệt các API key</div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small mb-1">Trạng thái</label>
+                    <div class="d-flex gap-3">
+                        <div class="form-check form-control d-flex align-items-center gap-2 w-50 m-0 py-2" id="statusActiveBox" style="cursor: pointer;" onclick="setStatus('ACTIVE')">
+                            <input class="form-check-input mt-0" type="radio" name="apiStatus" id="statusActive" value="ACTIVE">
+                            <label class="form-check-label text-success" for="statusActive" style="cursor: pointer;"><i class="bi bi-check-circle me-1"></i>Hoạt động</label>
+                        </div>
+                        <div class="form-check form-control d-flex align-items-center gap-2 w-50 m-0 py-2" id="statusLockedBox" style="cursor: pointer;" onclick="setStatus('LOCKED')">
+                            <input class="form-check-input mt-0" type="radio" name="apiStatus" id="statusLocked" value="LOCKED">
+                            <label class="form-check-label text-danger" for="statusLocked" style="cursor: pointer;"><i class="bi bi-pause-circle me-1"></i>Tạm khóa</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="saveEdit()">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentStatus = 'ACTIVE';
+
+function setStatus(status) {
+    currentStatus = status;
+    document.getElementById('statusActive').checked = (status === 'ACTIVE');
+    document.getElementById('statusLocked').checked = (status === 'LOCKED');
+    
+    if(status === 'ACTIVE') {
+        document.getElementById('statusActiveBox').classList.add('border-primary', 'bg-primary-subtle');
+        document.getElementById('statusLockedBox').classList.remove('border-danger', 'bg-danger-subtle');
+    } else {
+        document.getElementById('statusLockedBox').classList.add('border-danger', 'bg-danger-subtle');
+        document.getElementById('statusActiveBox').classList.remove('border-primary', 'bg-primary-subtle');
+    }
+}
+
+function addToken() {
+    const token = document.getElementById('adminTokenInput').value;
+    if(!token) return Swal.fire('Lỗi', 'Vui lòng nhập Token', 'warning');
+    
+    // Mở form nhưng ở chế độ Thêm mới
+    document.getElementById('editTokenId').value = '';
+    document.getElementById('editTokenName').value = '';
+    document.getElementById('newTokenValue').value = token;
+    document.querySelector('.modal-title').innerText = 'Thêm API Mới';
+    setStatus('ACTIVE');
+    
+    var modal = new bootstrap.Modal(document.getElementById('editApiModal'));
+    modal.show();
+}
+
+function copyToken(token) {
+    navigator.clipboard.writeText(token).then(() => {
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã sao chép!', showConfirmButton: false, timer: 1500 });
+    });
+}
+
+function openEditModal(id, name, status) {
+    document.getElementById('editTokenId').value = id;
+    document.getElementById('editTokenName').value = name;
+    document.getElementById('newTokenValue').value = '';
+    document.querySelector('.modal-title').innerText = 'Sửa cấu hình API';
+    setStatus(status);
+    var modal = new bootstrap.Modal(document.getElementById('editApiModal'));
+    modal.show();
+}
+
+function saveEdit() {
+    const id = document.getElementById('editTokenId').value;
+    const name = document.getElementById('editTokenName').value;
+    
+    if(!name.trim()) {
+        return Swal.fire('Cảnh báo', 'Vui lòng điền tên gợi nhớ cho API Key này!', 'warning');
+    }
+    
+    let payload = {};
+    if (id) {
+        // Chế độ Sửa
+        payload = { action: 'edit', id: id, name: name, status: currentStatus };
+    } else {
+        // Chế độ Thêm
+        const token = document.getElementById('newTokenValue').value;
+        payload = { action: 'add', api_token: token, name: name, status: currentStatus };
+    }
+    
+    fetch('/api/admin/update-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            window.location.reload();
+        } else {
+            Swal.fire('Lỗi', data.message, 'error');
+        }
+    });
+}
+
+function deleteToken(id) {
+    Swal.fire({
+        title: 'Bạn có chắc chắn?',
+        text: "Mã API sẽ bị xóa vĩnh viễn khỏi hệ thống!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa ngay',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/api/admin/update-token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', id: id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) window.location.reload();
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

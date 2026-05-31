@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Người dùng - HUTECH Secure QR{% endblock %}
+{% block page_title %}Người dùng{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* CARD */
+    .card-container { background: white; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); max-width: 1200px; margin: 0 auto; }
+    
+    /* TABLE */
+    .table-custom { font-size: 14px; border-collapse: separate; border-spacing: 0; width: 100%; margin-top: 15px; }
+    .table-custom th { background-color: #f8f9fa; color: #495057; font-weight: 600; padding: 12px 15px; border-bottom: 1px solid #dee2e6; border-top: 1px solid #dee2e6; }
+    .table-custom td { padding: 15px; border-bottom: 1px solid #e9ecef; vertical-align: middle; }
+    .table-custom tbody tr:hover { background-color: #f8f9fa; }
+    
+    .badge-super-admin { background-color: #dc3545; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px; }
+    .badge-active { background-color: #198754; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; }
+    
+    .pagination-custom .page-link { color: #495057; }
+    .pagination-custom .page-item.active .page-link { background-color: #0d6efd; border-color: #0d6efd; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card-container mt-2">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="m-0">Danh sách người dùng <i class="bi bi-question-circle text-primary ms-1" style="font-size: 16px;"></i></h5>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Thêm người dùng</button>
+    </div>
+    
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="d-flex align-items-center gap-2 small">
+            Xem 
+            <select class="form-select form-select-sm" style="width: 70px;">
+                <option>10</option>
+            </select>
+            mục
+        </div>
+        <div class="d-flex align-items-center gap-2 small">
+            Tìm: <input type="text" class="form-control form-control-sm" style="width: 200px;">
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>ID <i class="bi bi-arrow-down-up text-muted ms-1" style="font-size: 10px;"></i></th>
+                    <th>Họ và tên <i class="bi bi-arrow-down-up text-muted ms-1" style="font-size: 10px;"></i></th>
+                    <th>Tên đăng nhập <i class="bi bi-arrow-down-up text-muted ms-1" style="font-size: 10px;"></i></th>
+                    <th>Công ty <i class="bi bi-arrow-down-up text-muted ms-1" style="font-size: 10px;"></i></th>
+                    <th>Trạng thái <i class="bi bi-arrow-down-up text-muted ms-1" style="font-size: 10px;"></i></th>
+                    <th>Tạo lúc <i class="bi bi-arrow-down-up text-muted ms-1" style="font-size: 10px;"></i></th>
+                    <th>Công cụ <i class="bi bi-arrow-down-up text-muted ms-1" style="font-size: 10px;"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-muted">60465</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar-sm" style="margin-right: 10px;"><i class="bi bi-person-fill"></i></div>
+                            <div>
+                                <div class="fw-medium text-dark" id="usersListName">Nguyễn Đình Hòa</div>
+                                <span class="badge-super-admin"><i class="bi bi-star-fill"></i> Super Admin</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-muted">qskaitomz@gmail.com</td>
+                    <td class="text-muted" id="usersListCompany">Nguyễn Đình Hòa (NĐH)</td>
+                    <td><span class="badge-active">Hoạt động</span></td>
+                    <td class="text-muted">2026-05-21 23:05:31</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="small text-muted">Đang xem 1 đến 1 trong tổng số 1 mục</div>
+        <ul class="pagination pagination-sm pagination-custom m-0">
+            <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item disabled"><a class="page-link" href="#">Tiếp</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1 bg-white"><i class="bi bi-question-circle me-1"></i> Trợ giúp về Người dùng và phân quyền</button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let registeredName = localStorage.getItem('registered_name'); 
+        if (registeredName) {
+            document.getElementById('usersListName').innerText = registeredName;
+            document.getElementById('usersListCompany').innerText = registeredName + " (NĐH)";
+        }
+    });
+</script>
+{% endblock %}

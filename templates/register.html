@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - HUTECH Secure QR</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        body { background-color: #1a1d20; color: #e9ecef; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .auth-card { background-color: #212529; border: none; }
+        
+        .form-label { font-size: 14px; font-weight: 600; margin-bottom: 5px; color: #f8f9fa; }
+        .sub-label { font-size: 12px; color: #adb5bd; margin-bottom: 8px; display: block; }
+        .form-control { background-color: #1a1d20; border: 1px solid #343a40; color: white; padding: 10px 15px; }
+        .form-control:focus { background-color: #1a1d20; color: white; border-color: #0d6efd; box-shadow: none; }
+        
+        .input-group-text { background-color: #1a1d20; border: 1px solid #343a40; border-left: none; color: #adb5bd; cursor: pointer; }
+        
+        /* Custom Radio */
+        .type-radio { display: none; }
+        .type-label { border: 1px solid #343a40; border-radius: 6px; padding: 12px; cursor: pointer; display: flex; align-items: center; color: #adb5bd; transition: all 0.2s ease-in-out; height: 100%;}
+        .type-radio:checked + .type-label { border-color: #0d6efd; color: white; }
+        .type-label::before { content: ''; display: inline-block; width: 18px; height: 18px; border: 2px solid #6c757d; border-radius: 50%; margin-right: 10px; }
+        .type-radio:checked + .type-label::before { border-color: #0d6efd; background-color: #0d6efd; box-shadow: inset 0 0 0 3px #212529; }
+
+        /* Khung thông báo lỗi trên cùng */
+        .error-banner {
+            background-color: #3b1c1f;
+            color: #ea868f;
+            border: 1px solid #842029;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none; 
+        }
+
+        /* CSS Bắt lỗi */
+        .form-control.is-invalid-custom { border-color: #dc3545 !important; padding-right: 35px; }
+        .input-group.is-invalid-custom .input-group-text { border-color: #dc3545 !important; }
+        .error-text { color: #dc3545; font-size: 12px; margin-top: 5px; display: none; }
+        
+        /* Icon chấm than đỏ */
+        .input-wrapper { position: relative; }
+        .error-icon { position: absolute; right: 12px; top: 40px; color: #dc3545; display: none; pointer-events: none; }
+        .has-sub-label .error-icon { top: 65px; }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100 py-5">
+
+    <div class="container" style="max-width: 500px;">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-white">Đăng ký tài khoản</h3>
+            <p class="text-muted">Bắt đầu trải nghiệm dịch vụ Secure QR ngay hôm nay</p>
+        </div>
+
+        <div class="card auth-card shadow-lg p-4 mb-4">
+            
+            <div id="topErrorBanner" class="error-banner"></div>
+
+            <form id="registerForm" novalidate>
+                <div class="row mb-3">
+                    <div class="col-6 input-wrapper">
+                        <label class="form-label">Họ và đệm</label>
+                        <input type="text" class="form-control" id="lastName">
+                        <i class="bi bi-exclamation-circle error-icon" id="lastNameIcon"></i>
+                        <div class="error-text" id="lastNameError">Họ và tên đệm là bắt buộc</div>
+                    </div>
+                    <div class="col-6 input-wrapper">
+                        <label class="form-label">Tên</label>
+                        <input type="text" class="form-control" id="firstName">
+                        <i class="bi bi-exclamation-circle error-icon" id="firstNameIcon"></i>
+                        <div class="error-text" id="firstNameError">Tên là bắt buộc</div>
+                    </div>
+                </div>
+
+                <div class="mb-3 input-wrapper has-sub-label">
+                    <label class="form-label mb-0">Số điện thoại</label>
+                    <span class="sub-label">Dùng làm tên đăng nhập và số điện thoại liên hệ</span>
+                    <input type="tel" class="form-control" id="phone">
+                    <i class="bi bi-exclamation-circle error-icon" id="phoneIcon"></i>
+                    <div class="error-text" id="phoneError">Số điện thoại là bắt buộc</div>
+                </div>
+
+                <div class="mb-3 input-wrapper has-sub-label">
+                    <label class="form-label mb-0">Email</label>
+                    <span class="sub-label">Dùng làm tên đăng nhập và nhận thông tin về cập nhật mới, ưu đãi, hóa đơn...</span>
+                    <input type="email" class="form-control" id="email">
+                    <i class="bi bi-exclamation-circle error-icon" id="emailIcon"></i>
+                    <div class="error-text" id="emailError">Địa chỉ e-mail là bắt buộc</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mật khẩu</label>
+                    <div class="input-group" id="pwGroup">
+                        <input type="password" class="form-control border-end-0" id="password" placeholder="VD: Hutech@123">
+                        <span class="input-group-text border-start-0 bg-transparent text-danger d-none" id="pwErrorIcon" style="border-right: none;">
+                            <i class="bi bi-exclamation-circle"></i>
+                        </span>
+                        <span class="input-group-text" onclick="togglePassword('password', 'eye1')">
+                            <i class="bi bi-eye-slash" id="eye1"></i>
+                        </span>
+                    </div>
+                    <small class="text-secondary mt-1 d-block" style="font-size: 11px;">
+                        <i class="bi bi-info-circle me-1"></i>Từ 6 ký tự trở lên, gồm ít nhất 1 chữ in HOA và 1 ký tự đặc biệt (@, #, $...)
+                    </small>
+                    <div class="error-text" id="passwordError">Mật khẩu là bắt buộc</div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Nhập lại mật khẩu</label>
+                    <div class="input-group" id="confirmPwGroup">
+                        <input type="password" class="form-control border-end-0" id="confirmPassword">
+                        <span class="input-group-text border-start-0 bg-transparent text-danger d-none" id="confirmPwErrorIcon" style="border-right: none;">
+                            <i class="bi bi-exclamation-circle"></i>
+                        </span>
+                        <span class="input-group-text" onclick="togglePassword('confirmPassword', 'eye2')">
+                            <i class="bi bi-eye-slash" id="eye2"></i>
+                        </span>
+                    </div>
+                    <div class="error-text" id="confirmPasswordError">Nhập lại mật khẩu là bắt buộc</div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label mb-2">Quý khách là?</label>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="radio" name="accountType" id="typePersonal" class="type-radio" value="CANHAN" checked>
+                            <label for="typePersonal" class="type-label">Cá nhân</label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" name="accountType" id="typeOrg" class="type-radio" value="TOCHUC">
+                            <label for="typeOrg" class="type-label">Tổ chức</label>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-center text-muted small mb-4">
+                    Bằng việc đăng ký tài khoản, tôi chấp nhận <a href="#" class="text-decoration-none">Quy định sử dụng dịch vụ</a> và <a href="#" class="text-decoration-none">Chính sách riêng tư</a> của hệ thống.
+                </p>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" id="btnSubmit">Đăng ký</button>
+            </form>
+        </div>
+
+        <div class="text-center">
+            <span class="text-muted small">Đã có tài khoản? </span>
+            <a href="/" class="btn btn-outline-secondary btn-sm ms-2 border-secondary text-muted">Trở về đăng nhập</a>
+        </div>
+    </div>
+
+    <script>
+        // Hàm ẩn hiện con mắt mật khẩu
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("bi-eye-slash", "bi-eye");
+            } else {
+                input.type = "password";
+                icon.classList.replace("bi-eye", "bi-eye-slash");
+            }
+        }
+
+        // Logic xử lý khi bấm nút Đăng ký
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let hasError = false;
+            let firstErrorMessage = "";
+
+            // 1. Dọn dẹp lỗi cũ
+            function resetError(inputId, isGroup = false) {
+                document.getElementById(inputId).classList.remove('is-invalid-custom');
+                if(!isGroup) document.getElementById(inputId + 'Icon').style.display = 'none';
+                document.getElementById(inputId + 'Error').style.display = 'none';
+            }
+            
+            ['lastName', 'firstName', 'phone', 'email'].forEach(id => resetError(id));
+            
+            document.getElementById('password').classList.remove('is-invalid-custom');
+            document.getElementById('pwGroup').classList.remove('is-invalid-custom');
+            document.getElementById('pwErrorIcon').classList.add('d-none');
+            document.getElementById('passwordError').style.display = 'none';
+
+            document.getElementById('confirmPassword').classList.remove('is-invalid-custom');
+            document.getElementById('confirmPwGroup').classList.remove('is-invalid-custom');
+            document.getElementById('confirmPwErrorIcon').classList.add('d-none');
+            document.getElementById('confirmPasswordError').style.display = 'none';
+
+            document.getElementById('topErrorBanner').style.display = 'none';
+
+            // 2. Hàm hiển thị lỗi
+            function showError(inputId, message, isGroup = false) {
+                hasError = true;
+                if (!firstErrorMessage) firstErrorMessage = message;
+
+                document.getElementById(inputId).classList.add('is-invalid-custom');
+                
+                if(!isGroup) {
+                    document.getElementById(inputId + 'Icon').style.display = 'block';
+                } else {
+                    if(inputId === 'password') {
+                        document.getElementById('pwGroup').classList.add('is-invalid-custom');
+                        document.getElementById('pwErrorIcon').classList.remove('d-none');
+                    } else {
+                        document.getElementById('confirmPwGroup').classList.add('is-invalid-custom');
+                        document.getElementById('confirmPwErrorIcon').classList.remove('d-none');
+                    }
+                }
+                
+                let errorTextEl = document.getElementById(inputId + 'Error');
+                errorTextEl.innerText = message;
+                errorTextEl.style.display = 'block';
+            }
+
+            // 3. Lấy dữ liệu và kiểm tra (Validation)
+            const lastName = document.getElementById('lastName').value.trim();
+            const firstName = document.getElementById('firstName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!lastName) showError('lastName', 'Họ và tên đệm là bắt buộc');
+            if (!firstName) showError('firstName', 'Tên là bắt buộc');
+            if (!phone) showError('phone', 'Số điện thoại là bắt buộc');
+            if (!email) showError('email', 'Địa chỉ e-mail là bắt buộc');
+
+            // Kiểm tra mật khẩu bằng Regex
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
+
+            if (!password) {
+                showError('password', 'Mật khẩu là bắt buộc', true);
+            } else if (password.length < 6) {
+                showError('password', 'Mật khẩu phải có ít nhất 6 ký tự.', true);
+            } else if (!hasUpperCase) {
+                showError('password', 'Mật khẩu phải chứa ít nhất 1 chữ in HOA.', true);
+            } else if (!hasSpecialChar) {
+                showError('password', 'Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt (@, #, $...).', true);
+            }
+
+            if (!confirmPassword) {
+                showError('confirmPassword', 'Nhập lại mật khẩu là bắt buộc', true);
+            } else if (password && password !== confirmPassword) {
+                showError('confirmPassword', 'Mật khẩu không khớp.', true);
+            }
+
+            // 4. Báo lỗi tổng nếu có
+            if (hasError) {
+                const banner = document.getElementById('topErrorBanner');
+                banner.innerText = firstErrorMessage;
+                banner.style.display = 'block';
+                return; 
+            }
+
+            // 5. Gửi dữ liệu API
+            let btn = document.getElementById('btnSubmit');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang xử lý...';
+            btn.disabled = true;
+
+            fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    firstName: firstName,
+                    lastName: lastName,
+                    phone: phone
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    localStorage.setItem('registered_name', lastName + ' ' + firstName);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đăng ký thành công!',
+                        text: 'Hệ thống sẽ chuyển về trang đăng nhập ngay lập tức.',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: '#212529',
+                        color: '#fff'
+                    }).then(() => {
+                        window.location.href = '/'; 
+                    });
+                } else {
+                    btn.innerHTML = 'Đăng ký';
+                    btn.disabled = false;
+                    
+                    if(data.error_type === 'email_exists') {
+                        showError('email', data.message);
+                        const banner = document.getElementById('topErrorBanner');
+                        banner.innerText = data.message;
+                        banner.style.display = 'block';
+                    } else {
+                        Swal.fire({icon: 'error', title: 'Lỗi', text: data.message});
+                    }
+                }
+            })
+            .catch(error => {
+                btn.innerHTML = 'Đăng ký';
+                btn.disabled = false;
+                Swal.fire({icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối đến máy chủ'});
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Panel - HUTECH Secure QR{% endblock %}
+{% block page_title %}🛡️ Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* THEME RIÊNG CHO ADMIN */
+    .admin-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        border-top: 4px solid #3b82f6;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .admin-card.danger {
+        border-top-color: #ef4444;
+    }
+
+    .admin-card.warning {
+        border-top-color: #f59e0b;
+    }
+
+    .admin-card.success {
+        border-top-color: #10b981;
+    }
+
+    .admin-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #0f172a;
+    }
+
+    /* BẢNG LOG VÀ USER */
+    .admin-table {
+        width: 100%;
+        font-size: 13px;
+    }
+
+    .admin-table th {
+        background: #f8fafc;
+        color: #475569;
+        padding: 12px;
+        font-weight: 600;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .admin-table td {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+
+    .admin-table tbody tr:hover {
+        background: #f1f5f9;
+    }
+
+    .badge-status.banned {
+        background-color: #fee2e2;
+        color: #991b1b;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .badge-status.active {
+        background-color: #d1fae5;
+        color: #065f46;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .log-ip {
+        font-family: monospace;
+        color: #3b82f6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- TỔNG QUAN HỆ THỐNG -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="admin-card success">
+            <div class="admin-title"><i class="bi bi-shop text-success fs-4"></i> Cửa hàng đăng ký</div>
+            <div class="stat-number">1,248</div>
+            <div class="text-success small mt-2"><i class="bi bi-arrow-up-right"></i> +12 trong tuần này</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card">
+            <div class="admin-title"><i class="bi bi-cash-stack text-primary fs-4"></i> Tổng KL Giao dịch</div>
+            <div class="stat-number">84.5 Tỉ đ</div>
+            <div class="text-primary small mt-2">Luân chuyển qua hệ thống</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card warning">
+            <div class="admin-title"><i class="bi bi-exclamation-triangle text-warning fs-4"></i> Cảnh báo AI (Hệ thống)</div>
+            <div class="stat-number text-warning">{{ ai_alert_count }}</div>
+            <div class="text-muted small mt-2">Giao dịch cần xem xét đối soát</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card danger">
+            <div class="admin-title"><i class="bi bi-person-x text-danger fs-4"></i> Tài khoản bị khóa</div>
+            <div class="stat-number text-danger">15</div>
+            <div class="text-muted small mt-2">Vi phạm quy chế hệ thống</div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mb-4">
+    <button class="btn btn-primary fw-bold" id="btnShowAI" onclick="showSection('ai')"><i class="bi bi-robot me-1"></i>
+        Cảnh báo Gian lận AI</button>
+    <button class="btn btn-outline-primary fw-bold" id="btnShowUsers" onclick="showSection('users')"><i
+            class="bi bi-people me-1"></i> Quản lý Vòng đời Tài khoản</button>
+    {% if session.get('role') == 'ADMIN' %}
+    <button class="btn btn-outline-primary fw-bold" id="btnShowRoles" onclick="showSection('roles')"><i
+            class="bi bi-person-badge me-1"></i> Quản lý Quyền Tài khoản</button>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <!-- AI FRAUD DETECTION -->
+    <div class="col-md-12" id="aiFraudSection">
+        <div class="admin-card danger h-100">
+            <div class="admin-title"><i class="bi bi-robot"></i> Hệ thống Cảnh báo Gian lận bằng AI</div>
+            <p class="text-muted small">Hệ thống AI tự động phát hiện rửa tiền và làm giả QR dựa trên hành vi giao dịch.
+            </p>
+
+            <table class="admin-table mt-3">
+                <thead>
+                    <tr>
+                        <th>Mã đơn hàng</th>
+                        <th>Khách hàng</th>
+                        <th>Nhật ký phân tích hành vi AI (Giống Terminal)</th>
+                        <th>Số tiền nhận</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if ai_alerts %}
+                        {% for alert in ai_alerts %}
+                        <tr>
+                            <td class="fw-bold text-danger"><i class="bi bi-shield-slash me-1"></i>{{ alert.order_code }}</td>
+                            <td>{{ alert.customer_name }}</td>
+                            <td>
+                                <span class="badge bg-dark text-warning font-monospace">[{{ alert.time }}]</span>
+                                <span class="text-danger fw-bold ms-1">🚨 DỊ THƯỜNG:</span> {{ alert.reason }}
+                            </td>
+                            <td><span class="badge bg-danger fs-6">{{ "{:,}".format(alert.amount) }} đ</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-success fw-bold" onclick="forceApprove('{{ alert.order_code }}')">
+                                    <i class="bi bi-check-lg"></i> Duyệt thủ công
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-shield-check text-success display-4 d-block mb-2"></i>
+                                Hệ thống an toàn! Chưa ghi nhận hành vi thanh toán dị thường nào từ mô hình AI.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- USER MANAGEMENT -->
+    <div class="col-md-12 d-none" id="userManageSection">
+        <div class="admin-card h-100" style="overflow-y: auto; max-height: 500px;">
+            <div class="admin-title"><i class="bi bi-people"></i> Quản lý Vòng đời Tài khoản</div>
+            <p class="text-muted small">Cập nhật trạng thái hoạt động của tài khoản.</p>
+
+            <table class="admin-table mt-3">
+                <thead>
+                    <tr>
+                        <th>Người dùng</th>
+                        <th>Email</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td class="fw-bold">{{ u.full_name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            {% if u.status == 'ACTIVE' %}
+                            <span class="badge-status active">Đang hoạt động</span>
+                            {% else %}
+                            <span class="badge-status banned">Không hoạt động</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if u.status == 'ACTIVE' %}
+                            <button class="btn btn-sm btn-outline-success"
+                                onclick="toggleStatus({{ u.user_id }}, 'SUSPENDED', 'tắt hoạt động')"
+                                title="Đang hoạt động - Nhấn để tắt">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </button>
+                            {% else %}
+                            <button class="btn btn-sm btn-outline-danger"
+                                onclick="toggleStatus({{ u.user_id }}, 'ACTIVE', 'mở hoạt động')"
+                                title="Đang tắt - Nhấn để bật">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if session.get('role') == 'ADMIN' %}
+    <!-- ROLE MANAGEMENT -->
+    <div class="col-md-12 d-none" id="roleManageSection">
+        <div class="admin-card h-100" style="overflow-y: auto; max-height: 500px;">
+            <div class="admin-title"><i class="bi bi-person-badge"></i> Quản lý Quyền Tài khoản</div>
+            <p class="text-muted small">Cấp quyền Quản trị (Admin), Nhân viên (Staff) hoặc Cửa hàng (Merchant).</p>
+
+            <table class="admin-table mt-3">
+                <thead>
+                    <tr>
+                        <th>Người dùng</th>
+                        <th>Email</th>
+                        <th>Quyền hiện tại</th>
+                        <th>Thao tác (Cấp quyền)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td class="fw-bold">{{ u.full_name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            {% if u.role == 'ADMIN' %}
+                            <span class="badge bg-danger">Admin</span>
+                            {% elif u.role == 'STAFF' %}
+                            <span class="badge bg-info text-dark">Nhân viên</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Người dùng</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="role_{{ u.user_id }}"
+                                    id="role_admin_{{ u.user_id }}" autocomplete="off" {% if u.role=='ADMIN' %}checked{%
+                                    endif %} onclick="changeRole({{ u.user_id }}, 'ADMIN')">
+                                <label class="btn btn-outline-danger btn-sm"
+                                    for="role_admin_{{ u.user_id }}">Admin</label>
+
+                                <input type="radio" class="btn-check" name="role_{{ u.user_id }}"
+                                    id="role_staff_{{ u.user_id }}" autocomplete="off" {% if u.role=='STAFF' %}checked{%
+                                    endif %} onclick="changeRole({{ u.user_id }}, 'STAFF')">
+                                <label class="btn btn-outline-info btn-sm" for="role_staff_{{ u.user_id }}">Nhân
+                                    viên</label>
+
+                                <input type="radio" class="btn-check" name="role_{{ u.user_id }}"
+                                    id="role_merchant_{{ u.user_id }}" autocomplete="off" {% if u.role=='MERCHANT' or
+                                    u.role=='USER' %}checked{% endif %}
+                                    onclick="changeRole({{ u.user_id }}, 'MERCHANT')">
+                                <label class="btn btn-outline-secondary btn-sm"
+                                    for="role_merchant_{{ u.user_id }}">Người dùng</label>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+        <!-- SYSTEM LOGS -->
+        <div class="row mt-4 mb-5">
+            <div class="col-12">
+                <div class="admin-card">
+                    <div class="admin-title"><i class="bi bi-terminal"></i> Nhật ký Truy cập Hệ thống</div>
+
+                    <div class="bg-dark text-light p-3 rounded"
+                        style="font-family: monospace; font-size: 12px; height: 200px; overflow-y: auto;">
+                        <div><span class="text-success">[2026-05-29 18:30:12]</span> [AUTH] Người dùng U-1029 đăng nhập
+                            thành công. IP: <span class="log-ip">113.190.23.11</span></div>
+                        <div><span class="text-danger">[2026-05-29 18:35:05]</span> [ALERT] Cảnh báo dò mật khẩu trên
+                            U-0482. IP: <span class="log-ip">14.22.45.101</span> - Tự động chặn.</div>
+                        <div><span class="text-success">[2026-05-29 18:40:22]</span> [SYS] Đã gửi webhook đến Cửa hàng
+                            #9812. HTTP 200.</div>
+                        <div><span class="text-warning">[2026-05-29 18:42:15]</span> [AUTH] Thử đăng nhập Admin thất
+                            bại. IP: <span class="log-ip">103.11.23.44</span></div>
+                        <div><span class="text-info">[2026-05-29 18:45:00]</span> [JOB] Bắt đầu tiến trình đối soát cuối
+                            ngày.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block extra_js %}
+        <script>
+            function toggleStatus(userId, newStatus, actionText) {
+                Swal.fire({
+                    title: 'Xác nhận',
+                    text: `Bạn có muốn ${actionText} của tài khoản này hay không?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Có',
+                    cancelButtonText: 'Không'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch('/api/admin/toggle_status', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ user_id: userId, status: newStatus })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Thành công',
+                                        text: 'Đã cập nhật trạng thái!',
+                                        icon: 'success',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Lỗi', data.message, 'error');
+                                }
+                            });
+                    }
+                });
+            }
+
+            function showSection(section) {
+                const aiSec = document.getElementById('aiFraudSection');
+                const usrSec = document.getElementById('userManageSection');
+                const roleSec = document.getElementById('roleManageSection');
+
+                const btnAi = document.getElementById('btnShowAI');
+                const btnUsr = document.getElementById('btnShowUsers');
+                const btnRole = document.getElementById('btnShowRoles');
+
+                // Ẩn tất cả
+                aiSec.classList.add('d-none');
+                usrSec.classList.add('d-none');
+                if (roleSec) roleSec.classList.add('d-none');
+
+                btnAi.classList.replace('btn-primary', 'btn-outline-primary');
+                btnUsr.classList.replace('btn-primary', 'btn-outline-primary');
+                if (btnRole) btnRole.classList.replace('btn-primary', 'btn-outline-primary');
+
+                if (section === 'ai') {
+                    aiSec.classList.remove('d-none');
+                    btnAi.classList.replace('btn-outline-primary', 'btn-primary');
+                } else if (section === 'users') {
+                    usrSec.classList.remove('d-none');
+                    btnUsr.classList.replace('btn-outline-primary', 'btn-primary');
+                } else if (section === 'roles' && roleSec) {
+                    roleSec.classList.remove('d-none');
+                    btnRole.classList.replace('btn-outline-primary', 'btn-primary');
+                }
+            }
+
+            function changeRole(userId, newRole) {
+                let roleText = newRole === 'ADMIN' ? 'Admin' : (newRole === 'STAFF' ? 'Nhân viên' : 'Người dùng');
+
+                Swal.fire({
+                    title: 'Xác nhận cấp quyền',
+                    text: `Bạn có chắc chắn muốn chuyển tài khoản này thành ${roleText} không?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Có, cấp quyền',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch('/api/admin/change_role', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ user_id: userId, role: newRole })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Thành công',
+                                        text: 'Đã cập nhật quyền thành công!',
+                                        icon: 'success',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Lỗi', data.message, 'error');
+                                }
+                            });
+                    } else {
+                        // Nếu hủy, load lại trang để reset radio button
+                        window.location.reload();
+                    }
+                });
+            }
+        </script>
+        {% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Hồ sơ công ty - HUTECH Secure QR{% endblock %}
+{% block page_title %}Hồ sơ công ty{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* PROFILE CARD */
+    .profile-card { background: white; border: 1px solid #e9ecef; border-radius: 8px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); width: 100%; max-width: 800px; margin: 0 auto; }
+    .avatar-lg { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; font-size: 24px; font-weight: bold; margin: 0 auto 15px auto; }
+    
+    .info-section { border: 1px solid #e9ecef; border-radius: 8px; padding: 25px; margin-top: 30px; }
+    .info-title { font-size: 16px; color: #495057; margin-bottom: 25px; font-weight: 600;}
+    
+    .info-row { display: flex; margin-bottom: 20px; font-size: 14px; }
+    .info-label { width: 250px; color: #6c757d; }
+    .info-value { color: #212529; font-weight: 500; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set full_name = session.get('full_name', 'Người dùng') %}
+{% set short_name = session.get('short_name') %}
+{% if short_name %}
+    {% set initials = short_name %}
+{% else %}
+    {% set name_parts = full_name.strip().split(' ') %}
+    {% if name_parts|length >= 3 %}
+        {% set initials = name_parts[0][0]|upper ~ name_parts[1][0]|upper ~ name_parts[-1][0]|upper %}
+    {% elif name_parts|length == 2 %}
+        {% set initials = name_parts[0][0]|upper ~ name_parts[1][0]|upper %}
+    {% elif name_parts|length == 1 %}
+        {% set initials = name_parts[0][0:2]|upper %}
+    {% else %}
+        {% set initials = 'ND' %}
+    {% endif %}
+{% endif %}
+
+<div class="profile-card mt-2">
+    <div class="text-center">
+        <div class="avatar-lg" id="profileAvatar">{{ initials }}</div>
+        <h5 class="fw-bold text-secondary mb-1" id="profileNameDisplay">{{ full_name }}</h5>
+        <button class="btn btn-outline-warning btn-sm mt-3 px-3" data-bs-toggle="modal" data-bs-target="#editProfileModal"><i class="bi bi-pencil me-1"></i> Sửa thông tin</button>
+    </div>
+    
+    <div class="info-section">
+        <h6 class="info-title">Thông tin công ty</h6>
+        
+        <div class="info-row">
+            <div class="info-label">Tên công ty</div>
+            <div class="info-value" id="profileCompanyDisplay">{{ full_name }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Tên gọi tắt</div>
+            <div class="info-value" id="profileShortDisplay">{{ initials }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Số lượng người dùng</div>
+            <div class="info-value"><a href="/users" class="text-decoration-none">1</a></div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Tài khoản ngân hàng</div>
+            <div class="info-value"><a href="#" class="text-decoration-none">1</a></div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Tài khoản ảo (VA)</div>
+            <div class="info-value">1</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Ngày tạo</div>
+            <div class="info-value">2026-05-21 23:05:31</div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa thông tin -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+        <h5 class="modal-title fw-semibold text-secondary">Sửa thông tin công ty</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-4 py-4">
+        <div class="mb-4">
+            <label class="form-label text-muted small fw-semibold mb-1">Tên đầy đủ <span class="text-danger">(*)</span></label>
+            <input type="text" id="editFullName" class="form-control" value="{{ full_name }}">
+        </div>
+        <div class="mb-2">
+            <label class="form-label text-muted small fw-semibold mb-1">Tên viết tắt <span class="text-danger">(*)</span></label>
+            <input type="text" id="editShortName" class="form-control" value="{{ initials }}">
+            <div class="form-text mt-1" style="font-size: 11px;">Ví dụ: Viettel, Mobifone, VinGroup</div>
+        </div>
+      </div>
+      <div class="modal-footer border-top px-4 py-3 bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        <button type="button" class="btn btn-primary px-4" onclick="saveProfile()">Lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function saveProfile() {
+        const btn = document.querySelector('button[onclick="saveProfile()"]');
+        const originalText = btn.innerText;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang lưu...';
+        btn.disabled = true;
+
+        const fullName = document.getElementById('editFullName').value;
+        const shortName = document.getElementById('editShortName').value;
+
+        fetch('/api/update_profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                full_name: fullName,
+                short_name: shortName
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Tải lại trang để cập nhật giao diện ngay lập tức
+                window.location.reload();
+            } else {
+                Swal.fire('Lỗi', data.message || 'Không thể cập nhật thông tin', 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            Swal.fire('Lỗi', 'Lỗi hệ thống', 'error');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block title %}Sổ cái Blockchain - HUTECH Secure QR{% endblock %}
+{% block page_title %}Khối Dữ Liệu Blockchain{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Container tổng (Nền xám nhạt kiểu Ganache) */
+.ganache-container {
+    background-color: var(--bs-body-bg);
+    padding: 24px;
+    border-radius: 12px;
+}
+
+/* Từng Khối (Row Card) */
+.ganache-block-row {
+    background-color: var(--bs-secondary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.ganache-block-row:hover {
+    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    border-color: var(--bs-secondary-color);
+    transform: translateY(-2px);
+}
+
+/* Nhãn (Label) in hoa nhỏ */
+.ganache-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--bs-secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+/* Số thứ tự Khối */
+.block-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--bs-body-color);
+    line-height: 1;
+}
+
+/* Mã JSON (Mô phỏng Terminal) */
+.block-data {
+    background-color: #1e1e1e;
+    color: #20c997;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.8rem;
+    max-height: 120px; /* Giới hạn chiều cao nếu data quá dài */
+    overflow-y: auto;
+    white-space: pre-wrap;
+    margin-bottom: 0;
+    border: 1px solid var(--bs-border-color);
+}
+
+/* Khu vực Mã băm (Hash) */
+.hash-value {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--bs-body-color);
+    background-color: var(--bs-tertiary-bg);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px dashed var(--bs-border-color);
+    word-break: break-all;
+}
+.hash-current {
+    color: var(--bs-success-text-emphasis);
+    background-color: var(--bs-success-bg-subtle);
+    border-color: var(--bs-success-border-subtle);
+    font-weight: 700;
+}
+
+/* Badge Nonce */
+.nonce-badge {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--bs-info-text-emphasis);
+    background: var(--bs-info-bg-subtle);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--bs-info-border-subtle);
+}
+
+/* Custom Scrollbar cho JSON */
+.block-data::-webkit-scrollbar { width: 6px; }
+.block-data::-webkit-scrollbar-track { background: transparent; }
+.block-data::-webkit-scrollbar-thumb { background: var(--bs-secondary-color); border-radius: 3px; }
+
+/* Modal Timeline Style */
+.modal-timeline-connector {
+    width: 4px;
+    height: 40px;
+    background: linear-gradient(180deg, #198754 0%, transparent 100%);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+.modal-block-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 12px;
+    background: var(--bs-body-bg);
+    overflow: hidden;
+}
+.modal-block-header {
+    background: var(--bs-tertiary-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1 text-body-emphasis"><i class="bi bi-hdd-network text-success me-2"></i>Sổ cái Blockchain</h4>
+            <p class="text-muted small mb-0">Hệ thống lưu trữ giao dịch bất khả xâm phạm</p>
+        </div>
+        <button class="btn btn-primary shadow-sm" onclick="window.location.reload()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Làm mới Sổ cái
+        </button>
+    </div>
+
+    <div class="ganache-container shadow-sm border border-secondary-subtle">
+        {% if blocks %}
+            {% for block in blocks %}
+            <div class="ganache-block-row" style="cursor: pointer;" onclick="showBlockModal(this)"
+                data-index="{{ block.index }}"
+                data-timestamp="{{ block.timestamp }}"
+                data-prev-hash="{{ block.previous_hash }}"
+                data-hash="{{ block.block_hash }}"
+                data-nonce="{{ block.nonce }}"
+                data-info="{{ block.data | e }}">
+                <div class="row align-items-center">
+                    
+                    <div class="col-md-2 text-center border-end border-secondary-subtle mb-3 mb-md-0">
+                        <div class="ganache-label">Khối</div>
+                        <div class="block-number text-primary">#{{ block.index }}</div>
+                        <div class="text-muted small mt-2 fw-semibold">
+                            <i class="bi bi-clock me-1"></i>{{ block.timestamp }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 border-end border-secondary-subtle mb-3 mb-md-0 px-md-4">
+                        <div class="d-flex justify-content-between align-items-end mb-1">
+                            <div class="ganache-label"><i class="bi bi-filetype-json me-1"></i> Dữ liệu Giao dịch</div>
+                        </div>
+                        <pre class="block-data shadow-sm">{{ block.data }}</pre>
+                    </div>
+
+                    <div class="col-md-6 px-md-4">
+                        <div class="mb-3">
+                            <div class="ganache-label"><i class="bi bi-arrow-left-circle me-1"></i> Mã băm Khối Trước</div>
+                            <div class="hash-value">{{ block.previous_hash }}</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="ganache-label"><i class="bi bi-check-circle-fill text-success me-1"></i> Mã băm Hiện Tại</div>
+                            <div class="hash-value hash-current">{{ block.block_hash }}</div>
+                        </div>
+
+                        <div class="d-flex align-items-center mt-1">
+                            <span class="ganache-label mb-0 me-3"><i class="bi bi-cpu me-1"></i> Bằng chứng (Nonce):</span>
+                            <span class="nonce-badge">{{ block.nonce }}</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="text-center text-muted mt-4">
+                <div style="width: 12px; height: 12px; background: var(--bs-border-color); border-radius: 50%; margin: 0 auto 8px auto;"></div>
+                <small class="fw-bold text-uppercase">Genesis Block (Khởi nguyên)</small>
+            </div>
+
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox fs-1 d-block mb-3 text-warning"></i>
+                <h5 class="fw-bold text-body-emphasis">Blockchain hiện tại đang trống!</h5>
+                <p class="text-muted">Chưa có giao dịch nào được xác nhận và "đào" vào hệ thống.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Block Details Modal -->
+<div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" style="background-color: var(--bs-secondary-bg); border-color: var(--bs-border-color);">
+      <div class="modal-header border-secondary-subtle">
+        <h5 class="modal-title fw-bold text-body-emphasis" id="blockModalLabel"><i class="bi bi-link-45deg text-success me-2"></i>Chi tiết Khối</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+          
+          <div class="text-center mb-2">
+              <div class="badge bg-secondary mb-2"><i class="bi bi-link-45deg me-1"></i>Được liên kết với chuỗi</div>
+              <div class="modal-timeline-connector"></div>
+          </div>
+
+          <div class="modal-block-card shadow-sm">
+              <div class="modal-block-header">
+                  <h5 class="m-0 fw-bold text-body-emphasis"><i class="bi bi-box text-primary me-2"></i>Khối #<span id="modal-block-index"></span></h5>
+                  <span class="badge bg-secondary"><i class="bi bi-clock me-1"></i><span id="modal-block-timestamp"></span></span>
+              </div>
+              
+              <div class="card-body p-4">
+                  <h6 class="fw-bold mb-3 text-body-emphasis"><i class="bi bi-filetype-json text-muted me-2"></i>Dữ liệu Giao dịch</h6>
+                  <pre class="block-data shadow-sm mb-4" id="modal-block-data" style="max-height: 250px;"></pre>
+
+                  <h6 class="fw-bold mb-3 text-body-emphasis"><i class="bi bi-cpu text-muted me-2"></i>Thông số Thuật toán (Proof of Work)</h6>
+                  <div class="d-flex align-items-center mb-3">
+                      <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-3 py-2 fs-6 me-3">Nonce</span>
+                      <span class="fw-bold fs-5 text-info-emphasis" id="modal-block-nonce"></span>
+                  </div>
+
+                  <div class="mb-3">
+                      <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle mb-2 px-2 py-1"><i class="bi bi-arrow-left-circle me-1"></i>Mã băm Khối Trước</span>
+                      <div class="hash-value" id="modal-block-prev-hash"></div>
+                  </div>
+
+                  <div>
+                      <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle mb-2 px-2 py-1"><i class="bi bi-check-circle me-1"></i>Mã băm Khối Hiện Tại</span>
+                      <div class="hash-value hash-current" id="modal-block-hash"></div>
+                  </div>
+              </div>
+          </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showBlockModal(element) {
+    document.getElementById('modal-block-index').innerText = element.getAttribute('data-index');
+    document.getElementById('modal-block-timestamp').innerText = element.getAttribute('data-timestamp');
+    document.getElementById('modal-block-nonce').innerText = element.getAttribute('data-nonce');
+    document.getElementById('modal-block-prev-hash').innerText = element.getAttribute('data-prev-hash');
+    document.getElementById('modal-block-hash').innerText = element.getAttribute('data-hash');
+    
+    // Parse escaped HTML entities back to text
+    const parser = new DOMParser();
+    const dom = parser.parseFromString('<!doctype html><body>' + element.getAttribute('data-info'), 'text/html');
+    document.getElementById('modal-block-data').innerText = dom.body.textContent;
+
+    const modal = new bootstrap.Modal(document.getElementById('blockModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

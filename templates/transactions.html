@@ -1,0 +1,507 @@
+{% extends 'base.html' %}
+
+{% block title %}Danh sách giao dịch - HUTECH Secure QR{% endblock %}
+{% block page_title %}Danh sách giao dịch{% endblock %}
+
+{% block extra_css %}
+<style>
+    .summary-card {
+        border-radius: 8px;
+        padding: 20px;
+        background: #fff;
+        border: 1px solid #e0e6ed;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .summary-value {
+        font-size: 24px;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+    .summary-value.positive { color: #1e8e3e; }
+    .summary-value.negative { color: #dc3545; }
+    .summary-value.neutral { color: #0d6efd; }
+    
+    /* BẢN SAO CSS BẢNG SEPAY (HÌNH 1) */
+    .sepay-table-container {
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        overflow: hidden; /* Cắt góc bo tròn */
+    }
+    .sepay-table {
+        margin-bottom: 0;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    /* Header Bảng */
+    .sepay-table thead th {
+        background-color: #ffffff; /* Trắng tinh */
+        color: #5f6368;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 16px;
+        border-bottom: 1px solid #e0e6ed;
+        border-right: none;
+        border-left: none;
+        white-space: nowrap;
+    }
+    
+    /* Body Bảng */
+    .sepay-table tbody td {
+        padding: 16px;
+        vertical-align: middle;
+        font-size: 13.5px;
+        color: #3c4043;
+        border-bottom: 1px solid #f0f2f4;
+        border-right: none; /* Xóa viền dọc */
+        border-left: none;
+        white-space: nowrap;
+    }
+    .sepay-table tbody tr:hover {
+        background-color: #f8f9fa; /* Hover nhạt */
+    }
+
+    /* Style đặc biệt cho các cột */
+    .amount-positive {
+        color: #1e8e3e; /* Xanh lá đậm chuẩn Google/SePay */
+        font-weight: 700;
+        font-size: 14.5px;
+    }
+    .amount-negative {
+        color: #d93025;
+        font-weight: 700;
+        font-size: 14.5px;
+    }
+    
+    /* Badge Tự động (Webhook) - Dạng Pill bo tròn */
+    .badge-webhook {
+        background-color: #e6f4ea;
+        color: #1e8e3e;
+        border: 1px solid #ceead6;
+        border-radius: 50rem; /* Bo tròn 2 đầu */
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Icon Ngân hàng hoa thị vàng */
+    .bank-logo-napas {
+        color: #fbbc04;
+        font-size: 18px;
+        margin-right: 6px;
+        vertical-align: text-bottom;
+    }
+    
+    /* Font số liệu cho ID và Ref Code */
+    .font-monospace-clean {
+        font-family: 'Consolas', 'Courier New', monospace;
+        color: #5f6368;
+    }
+    .filter-bar {
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+        margin-bottom: 20px;
+    }
+    
+    .dropdown-menu-columns {
+        padding: 10px;
+        width: 200px;
+    }
+    .bank-logo {
+        width: 24px;
+        height: 24px;
+        background-color: #ffc107;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        margin-right: 8px;
+    }
+</style>
+<!-- Thêm Flatpickr cho datepicker chuyên nghiệp -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Top Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="summary-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted fw-semibold">Tiền vào</span>
+                    <i class="bi bi-arrow-down-left-circle text-success fs-5"></i>
+                </div>
+                <div class="summary-value positive" id="total-in">+0 đ</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="summary-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted fw-semibold">Tiền ra</span>
+                    <i class="bi bi-arrow-up-right-circle text-danger fs-5"></i>
+                </div>
+                <div class="summary-value negative" id="total-out">-0 đ</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="summary-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted fw-semibold">Chênh lệch</span>
+                    <i class="bi bi-wallet2 text-primary fs-5"></i>
+                </div>
+                <div class="summary-value neutral" id="total-balance">+0 đ</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <!-- Search -->
+            <div class="input-group" style="width: 250px;">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="searchInput" placeholder="Nội dung, mã tham chiếu">
+            </div>
+            
+            <!-- Account -->
+            <select class="form-select" id="accountSelect" style="width: 200px;">
+                <option value="ALL">Tất cả tài khoản</option>
+                {% if user_bank %}
+                <option value="{{ user_bank.bank_account }}" selected>{{ user_bank.bank_code }} - {{ user_bank.bank_account }}</option>
+                {% endif %}
+            </select>
+            
+            <!-- Date Range -->
+            <div class="input-group" style="width: 220px;">
+                <span class="input-group-text bg-white"><i class="bi bi-calendar3"></i></span>
+                <input type="text" id="dateRange" class="form-control" placeholder="Thời gian">
+            </div>
+            
+            <!-- Filter buttons -->
+            <button class="btn btn-outline-secondary btn-sm bg-white text-dark"><i class="bi bi-funnel"></i> Tiền vào</button>
+            <button class="btn btn-outline-secondary btn-sm bg-white text-dark"><i class="bi bi-funnel"></i> Tiền ra</button>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <!-- Column Toggle -->
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary bg-white" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                    <i class="bi bi-layout-three-columns"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-columns shadow" id="columnToggleMenu">
+                    <h6 class="dropdown-header">HIỂN THỊ CỘT</h6>
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+            <!-- Export -->
+            <button class="btn btn-outline-secondary bg-white text-dark" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="bi bi-download me-1"></i> Xuất file
+            </button>
+        </div>
+    </div>
+
+    <!-- BẢNG GIAO DỊCH CHUẨN SEPAY -->
+    <div class="sepay-table-container table-responsive">
+        <table class="table sepay-table" id="txTable">
+            <thead>
+                <tr>
+                    <th data-col="id">ID <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="time">THỜI GIAN <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="account">TÀI KHOẢN <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="virtual_account">TÀI KHOẢN ẢO <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="amount">SỐ TIỀN <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="cumulative">LŨY KẾ <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="desc">NỘI DUNG <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="payment_code">MÃ THANH TOÁN <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="ref_code">MÃ THAM CHIẾU <i class="bi bi-chevron-expand ms-1 opacity-50"></i></th>
+                    <th data-col="auto">TỰ ĐỘNG</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in transactions %}
+                <tr class="tx-row" data-account="{{ tx.bank_account }}" data-time="{{ tx.created_at }}">
+                    <td data-col="id" class="font-monospace-clean">{{ tx.id[:8] }}</td>
+                    
+                    <td data-col="time" class="text-muted">
+                        {{ tx.created_at }} 
+                        <span class="text-secondary fst-italic ms-1 relative-time-label">· Vừa xong</span>
+                    </td>
+                    
+                    <td data-col="account">
+                        <i class="bi bi-flower1 bank-logo-napas"></i>{{ tx.bank_account }}
+                    </td>
+                    
+                    <td data-col="virtual_account" class="text-muted">{{ tx.virtual_account }}</td>
+                    
+                    <td data-col="amount" class="{% if tx.amount > 0 %}amount-positive{% else %}amount-negative{% endif %}" data-value="{{ tx.amount }}">
+                        {% if tx.amount > 0 %}+{% endif %}{{ "{:,.0f}".format(tx.amount).replace(',', '.') }} đ
+                    </td>
+                    
+                    <td data-col="cumulative" class="text-muted">—</td>
+                    
+                    <td data-col="desc" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="{{ tx.description }}">
+                        <span class="text-muted">
+                            {% if tx.description %}
+                                {{ tx.description }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </span>
+                    </td>
+                    
+                    <td data-col="payment_code">
+                        {% if tx.qr_id %}
+                            <span class="badge bg-light text-primary border border-primary-subtle px-2 py-1" style="font-family: monospace; letter-spacing: 0.5px;">
+                                {{ tx.qr_id }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td data-col="ref_code" class="font-monospace-clean">{{ tx.id }}</td>
+                    
+                    <td data-col="auto">
+                        <span class="badge-webhook">
+                            <i class="bi bi-lightning-charge-fill"></i> Webhook 1
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not transactions %}
+                <tr>
+                    <td colspan="10" class="text-center py-5 text-muted">
+                        Chưa có giao dịch nào
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-5">
+        <div class="d-flex align-items-center text-muted small">
+            Hiển thị 
+            <select class="form-select form-select-sm mx-2" style="width: 70px;" id="pageSize">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select> 
+            dòng. Hiển thị 1 - <span id="visibleCount">0</span> / <span id="totalCount">{{ transactions|length }}</span> giao dịch
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-0">
+                <h5 class="modal-title fw-bold">Xuất dữ liệu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Tài khoản</label>
+                    <select class="form-select border-secondary">
+                        <option>Tất cả tài khoản</option>
+                        {% if user_bank %}
+                        <option selected>{{ user_bank.bank_code }} - {{ user_bank.bank_account }}</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold">Khoảng thời gian</label>
+                    <input type="text" class="form-control border-secondary" value="Hôm nay">
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Ngân hàng</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Chủ tài khoản</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Thời gian</label></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Tiền</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Nội dung</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Mã tham chiếu</label></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer p-0 border-0">
+                <button type="button" class="btn btn-primary w-100 m-0 py-3 rounded-0 rounded-bottom fw-bold" onclick="alert('Đang xuất file Excel...')">
+                    <i class="bi bi-download me-2"></i> Xuất file
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    const columns = [
+        { id: 'id', label: 'ID', default: true },
+        { id: 'time', label: 'Thời gian', default: true },
+        { id: 'account', label: 'Tài khoản', default: true },
+        { id: 'virtual_account', label: 'Tài khoản ảo', default: true },
+        { id: 'amount', label: 'Số tiền', default: true },
+        { id: 'cumulative', label: 'Lũy kế', default: true },
+        { id: 'desc', label: 'Nội dung', default: true },
+        { id: 'payment_code', label: 'Mã thanh toán', default: true },
+        { id: 'ref_code', label: 'Mã tham chiếu', default: true },
+        { id: 'auto', label: 'Tự động', default: true }
+    ];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Init DatePicker
+        flatpickr("#dateRange", { mode: "range", dateFormat: "d/m/Y" });
+
+        // Build Column Toggler Menu
+        const menu = document.getElementById('columnToggleMenu');
+        columns.forEach(col => {
+            let div = document.createElement('div');
+            div.className = 'form-check ms-3 mb-2';
+            div.innerHTML = `<input class="form-check-input col-toggle" type="checkbox" value="${col.id}" id="chk_${col.id}" checked>
+                             <label class="form-check-label text-dark" for="chk_${col.id}">${col.label}</label>`;
+            menu.appendChild(div);
+        });
+
+        // Toggle Column Logic
+        document.querySelectorAll('.col-toggle').forEach(chk => {
+            chk.addEventListener('change', function() {
+                const colId = this.value;
+                const isChecked = this.checked;
+                document.querySelectorAll(`[data-col="${colId}"]`).forEach(el => {
+                    if(isChecked) el.classList.remove('d-none');
+                    else el.classList.add('d-none');
+                });
+            });
+            // Stop propagation so menu doesn't close on click
+            chk.addEventListener('click', e => e.stopPropagation());
+        });
+        
+        // Filter Logic (Search & Account)
+        function applyFilters() {
+            let query = document.getElementById('searchInput').value.toLowerCase();
+            let accFilter = document.getElementById('accountSelect').value;
+            let rows = document.querySelectorAll('.tx-row');
+            
+            let totalIn = 0;
+            let totalOut = 0;
+            let count = 0;
+            
+            rows.forEach(row => {
+                let show = true;
+                let text = row.innerText.toLowerCase();
+                let acc = row.getAttribute('data-account');
+                
+                if (query && !text.includes(query)) show = false;
+                if (accFilter !== 'ALL' && acc !== accFilter) show = false;
+                
+                if (show) {
+                    row.classList.remove('d-none');
+                    count++;
+                    // Add to summary
+                    let amtEl = row.querySelector('[data-col="amount"]');
+                    if (amtEl) {
+                        let val = parseFloat(amtEl.getAttribute('data-value'));
+                        if (val > 0) totalIn += val;
+                        else totalOut += Math.abs(val);
+                    }
+                } else {
+                    row.classList.add('d-none');
+                }
+            });
+            
+            document.getElementById('visibleCount').innerText = count;
+            
+            // Format numbers
+            const format = (n) => new Intl.NumberFormat('vi-VN').format(n) + ' đ';
+            document.getElementById('total-in').innerText = '+' + format(totalIn);
+            document.getElementById('total-out').innerText = '-' + format(totalOut);
+            let bal = totalIn - totalOut;
+            document.getElementById('total-balance').innerText = (bal > 0 ? '+' : '') + format(bal);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('accountSelect').addEventListener('change', applyFilters);
+        
+        // Handle Row per page
+        document.getElementById('pageSize').addEventListener('change', function() {
+            let size = parseInt(this.value);
+            let rows = document.querySelectorAll('.tx-row');
+            rows.forEach((row, index) => {
+                if(index >= size) row.classList.add('d-none');
+                else row.classList.remove('d-none');
+            });
+            // This is a simplified client-side pagination
+        });
+
+        // Initial run
+        applyFilters();
+
+        // --- TÍNH NĂNG MỚI: CẬP NHẬT THỜI GIAN ĐỘNG (Ví dụ: "· 6 phút trước") ---
+        function updateRelativeTime() {
+            // Lấy thời gian hiện tại
+            const now = new Date();
+            
+            document.querySelectorAll('.tx-row').forEach(row => {
+                const timeStr = row.getAttribute('data-time'); // Lấy dữ liệu thời gian từ attribute
+                if (!timeStr) return;
+                
+                // Parse thời gian (cắt dạng d/m/Y H:i:s thành format chuẩn nếu cần, nhưng giả định backend truyền dạng Y-m-d H:i:s hoặc JS tự hiểu)
+                // Chú ý: Ở backend, date đang trả về dạng "%d/%m/%Y %H:%M:%S", hàm Date() của JS có thể không hiểu chuẩn này.
+                // Hàm này sẽ convert "31/05/2026 00:10:08" thành "2026-05-31T00:10:08"
+                let parts = timeStr.split(/[\s/:]/);
+                if (parts.length >= 6) {
+                    const txTime = new Date(parts[2], parts[1]-1, parts[0], parts[3], parts[4], parts[5]);
+                    const diffMs = now - txTime;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    
+                    let relativeStr = "";
+                    if (diffMins < 1 || isNaN(diffMins)) {
+                        relativeStr = "· Vừa xong";
+                    } else if (diffMins < 60) {
+                        relativeStr = "· " + diffMins + " phút trước";
+                    } else if (diffMins < 1440) {
+                        relativeStr = "· " + Math.floor(diffMins / 60) + " giờ trước";
+                    } else {
+                        relativeStr = "· " + Math.floor(diffMins / 1440) + " ngày trước";
+                    }
+                    
+                    // In ra màn hình
+                    const timeSpan = row.querySelector('.relative-time-label');
+                    if (timeSpan) timeSpan.innerText = relativeStr;
+                }
+            });
+        }
+        
+        // Chạy ngay khi tải trang và thiết lập chạy ngầm mỗi 60 giây
+        updateRelativeTime();
+        setInterval(updateRelativeTime, 60000);
+    });
+</script>
+{% endblock %}

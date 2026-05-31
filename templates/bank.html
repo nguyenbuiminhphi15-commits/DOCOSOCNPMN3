@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}Ngân hàng - HUTECH Secure QR{% endblock %}
+{% block page_title %}Ngân hàng{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bank-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        border: 1px solid #f0f0f0;
+    }
+    
+    .nav-tabs-custom {
+        border-bottom: 1px solid #e9ecef;
+        margin-bottom: 20px;
+    }
+    .nav-tabs-custom .nav-link {
+        border: none;
+        color: #6c757d;
+        padding: 10px 15px;
+        font-weight: 500;
+        margin-bottom: -1px;
+        background: transparent;
+    }
+    .nav-tabs-custom .nav-link.active {
+        color: #0d6efd;
+        border-bottom: 2px solid #0d6efd;
+    }
+    
+    .filter-btn {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 6px 12px;
+        color: #495057;
+        font-size: 14px;
+        margin-right: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    .empty-state-icon {
+        width: 64px;
+        height: 64px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: #adb5bd;
+        font-size: 30px;
+    }
+    
+    .promo-card {
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 15px;
+        border: 1px solid #f0f0f0;
+    }
+    .promo-card img {
+        width: 100%;
+        height: auto;
+    }
+    .promo-body {
+        padding: 15px;
+        background: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Cột trái: Nội dung chính -->
+    <div class="col-lg-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0 text-dark fw-semibold">Tài khoản ngân hàng</h4>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary"><i class="bi bi-grid-fill"></i></button>
+                <button type="button" class="btn btn-outline-secondary bg-white"><i class="bi bi-list"></i></button>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-4">
+            <div class="position-relative flex-grow-1">
+                <i class="bi bi-search position-absolute text-muted" style="left: 15px; top: 50%; transform: translateY(-50%);"></i>
+                <input type="text" class="form-control ps-5 rounded-pill" placeholder="Tìm tài khoản, ngân hàng, chủ tài khoản...">
+            </div>
+            <button class="btn btn-primary rounded-pill px-4" style="white-space: nowrap;"><i class="bi bi-plus me-1"></i> Kết nối mới</button>
+        </div>
+
+        <ul class="nav nav-tabs-custom">
+            <li class="nav-item"><a class="nav-link {% if user_bank %}active{% endif %}" id="nav-all" href="#" onclick="switchTab('all')">Tất cả <span id="count-all" class="text-muted">({% if user_bank %}1{% else %}0{% endif %})</span></a></li>
+            <li class="nav-item"><a class="nav-link" id="nav-connected" href="#" onclick="switchTab('connected')">Đã kết nối <span id="count-connected" class="text-muted">({% if user_bank %}1{% else %}0{% endif %})</span></a></li>
+            <li class="nav-item"><a class="nav-link {% if not user_bank %}active{% endif %}" id="nav-not-connected" href="#" onclick="switchTab('not-connected')">Chưa kết nối</a></li>
+        </ul>
+
+        <div class="mb-4 d-flex">
+            <button class="filter-btn"><i class="bi bi-funnel"></i> Kết nối qua</button>
+            <button class="filter-btn"><i class="bi bi-funnel"></i> Loại tài khoản</button>
+        </div>
+
+        <div id="tab-connected" class="{% if not user_bank %}d-none{% endif %} mt-4">
+            <div class="text-muted mb-3" style="font-size: 14px;">1 / 1 tài khoản</div>
+            <div class="card p-4 border-0 shadow-sm" style="max-width: 450px; border-radius: 12px; border: 1px solid #e9ecef !important; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" onclick="window.location.href='/bank_detail'">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 position-relative">
+                        <div style="width: 50px; height: 50px; background: #ffc107; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <div class="position-absolute" style="bottom: -2px; right: -2px; background: #e8f0fe; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
+                            <i class="bi bi-person-fill text-primary" style="font-size: 12px;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark" id="display-bank-acc">
+                            {% if user_bank %}
+                                {{ user_bank.bank_account }}
+                            {% else %}
+                                8898995935
+                            {% endif %}
+                        </h5>
+                        <div class="text-muted fw-semibold" style="font-size: 12px; letter-spacing: 0.5px;">
+                            {% if user_bank %}
+                                {{ user_bank.full_name|upper }} · {{ user_bank.bank_code }}
+                            {% else %}
+                                CHƯA CẬP NHẬT
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success" style="border-radius: 6px; padding: 6px 12px; font-weight: 600;">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Đã kết nối API
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-not-connected" class="{% if user_bank %}d-none{% endif %} text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 400px;">
+            
+            <div class="d-flex align-items-center mb-4 text-muted">
+                <i class="bi bi-shield-lock fs-1 text-primary"></i>
+                <i class="bi bi-arrow-right mx-3 fs-4"></i>
+                <img src="https://sepay.vn/assets/img/logo-sepay-2.png" alt="SePay" height="30" style="filter: grayscale(100%) brightness(200%);">
+                <i class="bi bi-arrow-right mx-3 fs-4"></i>
+                <i class="bi bi-bank fs-1 text-success"></i>
+            </div>
+        
+            <h4 class="fw-bold text-light mb-3">Đồng bộ cổng thanh toán SePay</h4>
+            <p class="text-secondary mb-4" style="max-width: 500px;">
+                Hệ thống HUTECH Secure QR sử dụng SePay làm đối tác xử lý giao dịch trung gian để đảm bảo an toàn và nhận thông báo số dư theo thời gian thực.
+            </p>
+        
+            <div class="text-start bg-dark border border-secondary rounded-4 p-4 mb-4 shadow-sm" style="max-width: 550px;">
+                <div class="d-flex mb-3">
+                    <div class="me-3 text-primary fw-bold fs-5">1.</div>
+                    <div>
+                        <span class="text-light fw-bold d-block">Đăng ký đối tác SePay</span>
+                        <span class="text-secondary small">Truy cập trang chủ <a href="https://sepay.vn" target="_blank" class="text-decoration-none">sepay.vn</a> và tạo một tài khoản miễn phí.</span>
+                    </div>
+                </div>
+                <div class="d-flex mb-3">
+                    <div class="me-3 text-primary fw-bold fs-5">2.</div>
+                    <div>
+                        <span class="text-light fw-bold d-block">Liên kết ngân hàng gốc</span>
+                        <span class="text-secondary small">Đăng nhập SePay, thêm tài khoản ngân hàng thực tế của bạn để nhận tiền.</span>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="me-3 text-primary fw-bold fs-5">3.</div>
+                    <div>
+                        <span class="text-light fw-bold d-block">Khai báo cấu hình đồng bộ</span>
+                        <span class="text-secondary small">Lấy <strong>Số tài khoản</strong> (ảo hoặc chính) do SePay cung cấp và nhập vào hệ thống HUTECH Secure QR để tạo mã.</span>
+                    </div>
+                </div>
+            </div>
+        
+            <button class="btn btn-primary px-4 py-2 fw-bold" onclick="openBankSettings()">
+                <i class="bi bi-plus-lg me-1"></i> Khai báo tài khoản SePay
+            </button>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Không cần dùng localStorage nữa vì đã có Jinja lo việc hiển thị tab ban đầu
+});
+
+function switchTab(tabId) {
+    let tabConn = document.getElementById('tab-connected');
+    let tabNotConn = document.getElementById('tab-not-connected');
+    
+    // Hide all contents
+    if (tabConn) tabConn.classList.add('d-none');
+    if (tabNotConn) tabNotConn.classList.add('d-none');
+    
+    // Remove active from all tabs
+    document.getElementById('nav-all').classList.remove('active');
+    document.getElementById('nav-connected').classList.remove('active');
+    document.getElementById('nav-not-connected').classList.remove('active');
+    
+    let hasBank = {{ 'true' if user_bank else 'false' }};
+    
+    // Show selected
+    if (tabId === 'connected' || tabId === 'all') {
+        if (hasBank) {
+            if(tabConn) tabConn.classList.remove('d-none');
+            document.getElementById(tabId === 'connected' ? 'nav-connected' : 'nav-all').classList.add('active');
+        } else {
+            if(tabNotConn) tabNotConn.classList.remove('d-none');
+            document.getElementById('nav-not-connected').classList.add('active');
+        }
+    } else {
+        if(tabNotConn) tabNotConn.classList.remove('d-none');
+        document.getElementById('nav-not-connected').classList.add('active');
+    }
+}
+
+function openBankSettings() {
+    Swal.fire({
+        title: 'Khai báo Tài khoản SePay',
+        html: `
+            <div class="text-start mt-3" style="font-size: 14px;">
+                <label class="form-label text-muted fw-bold mb-1">CHỌN NGÂN HÀNG (ĐÃ LIÊN KẾT SEPAY)</label>
+                <select id="swal-bank-code" class="form-select mb-3 border-secondary bg-dark text-light">
+                    <option value="BIDV">BIDV</option>
+                    <option value="MB">MB Bank</option>
+                    <option value="VCB">Vietcombank</option>
+                    <option value="TCB">Techcombank</option>
+                    <option value="MSB">MSB Bank</option>
+                </select>
+                
+                <label class="form-label text-muted fw-bold mb-1">SỐ TÀI KHOẢN CẤP BỞI SEPAY</label>
+                <input id="swal-bank-acc" type="text" class="form-control border-secondary bg-dark text-light" placeholder="VD: 96247HOATHUI">
+                
+                <div class="form-text mt-2 text-info" style="font-size: 12px;">
+                    <i class="bi bi-info-circle"></i> Đảm bảo nhập chính xác để hệ thống tạo mã QR đồng bộ với dòng tiền.
+                </div>
+            </div>
+        `,
+        background: '#1e293b',
+        color: '#fff',
+        showCancelButton: true,
+        confirmButtonText: 'Lưu cấu hình',
+        cancelButtonText: 'Hủy bỏ',
+        confirmButtonColor: '#0d6efd',
+        cancelButtonColor: '#6c757d',
+        focusConfirm: false,
+        preConfirm: () => {
+            const bankCode = document.getElementById('swal-bank-code').value;
+            const bankAcc = document.getElementById('swal-bank-acc').value;
+            
+            if (!bankAcc) {
+                Swal.showValidationMessage('Vui lòng nhập Số tài khoản!');
+            }
+            return { bank_code: bankCode, bank_account: bankAcc }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let newBankInfo = result.value;
+            let userId = localStorage.getItem('user_id');
+
+            // Bắn dữ liệu xuống API Backend thực sự
+            fetch('/api/update-bank', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bank_code: newBankInfo.bank_code,
+                    bank_account: newBankInfo.bank_account
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đã đồng bộ!',
+                        text: 'Tài khoản của bạn đã sẵn sàng nhận tiền.',
+                        background: '#1e293b',
+                        color: '#fff'
+                    }).then(() => {
+                        location.reload(); 
+                    });
+                } else {
+                    Swal.fire('Lỗi', data.message || 'Không thể kết nối máy chủ', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Lỗi', 'Có lỗi xảy ra', 'error');
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    <title>Danh sách giao dịch - HUTECH Secure QR</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        [data-bs-theme="light"] {
+            --bs-body-bg: #f4f6f9;
+            --bs-secondary-bg: #ffffff;
+            --bs-tertiary-bg: #f8fafc;
+            --bs-border-color: #e2e8f0;
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #1a1d27;
+            --bs-secondary-bg: #252b3b;
+            --bs-tertiary-bg: #1e2330;
+            --bs-border-color: #333b4d;
+            --bs-body-color: #cbd5e1;
+            --bs-secondary-color: #94a3b8;
+            --bs-emphasis-color: #f8fafc;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; background-color: var(--bs-body-bg); color: var(--bs-body-color); }
+        
+        /* SIDEBAR */
+        .sidebar { background-color: var(--bs-secondary-bg); width: 260px; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1001; transition: all 0.3s ease; border-right: 1px solid var(--bs-border-color); }
+        .sidebar.collapsed { transform: translateX(-100%); }
+        .sidebar .logo-area { padding: 20px; font-size: 20px; font-weight: bold; border-bottom: 1px solid var(--bs-border-color); }
+        .sidebar .nav-item { padding: 12px 20px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--bs-body-color); font-weight: 500; }
+        .sidebar .nav-item:hover, .sidebar .nav-item.active { background-color: var(--bs-tertiary-bg); color: #3b82f6; border-left: 4px solid #3b82f6; }
+        
+        /* MAIN CONTENT */
+        .main-content { margin-left: 260px; transition: all 0.3s ease; min-height: 100vh; display: flex; flex-direction: column; background-color: var(--bs-body-bg); }
+        .main-content.expanded { margin-left: 0; }
+        
+        /* HEADER NAV */
+        .top-nav { background: var(--bs-secondary-bg); border-bottom: 1px solid var(--bs-border-color); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .quick-menu { font-size: 13px; cursor: pointer; color: var(--bs-secondary-color); }
+        .user-avatar-sm { width: 32px; height: 32px; background-color: var(--bs-secondary-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2b6cb0; font-weight: bold; font-size: 14px; margin-right: 10px; flex-shrink: 0;}
+        
+        .page-body { padding: 20px 30px; flex-grow: 1; }
+        
+        /* ALL DARK MODE CSS REMOVED TO FORCE LIGHT THEME EVERYWHERE */
+        
+<style>
+    .summary-card {
+        border-radius: 8px;
+        padding: 20px;
+        background: #fff;
+        border: 1px solid #e0e6ed;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .summary-value {
+        font-size: 24px;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+    .summary-value.positive { color: #28a745; }
+    .summary-value.negative { color: #dc3545; }
+    .summary-value.neutral { color: #0d6efd; }
+    
+    .table-responsive {
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+    }
+    .table thead th {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        border-bottom: 2px solid #dee2e6;
+        white-space: nowrap;
+    }
+    .table tbody td {
+        vertical-align: middle;
+        font-size: 14px;
+        color: #495057;
+        white-space: nowrap;
+    }
+    .filter-bar {
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+        margin-bottom: 20px;
+    }
+    
+    .dropdown-menu-columns {
+        padding: 10px;
+        width: 200px;
+    }
+    .bank-logo {
+        width: 24px;
+        height: 24px;
+        background-color: #ffc107;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        margin-right: 8px;
+    }
+</style>
+<!-- Thêm Flatpickr cho datepicker chuyên nghiệp -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="logo-area"><i class="bi bi-shield-check me-2"></i>SECURE QR</div>
+        <div class="mt-3">
+            <a href="/dashboard" class="nav-item "><i class="bi bi-grid-1x2"></i> Tổng quan</a>
+            <a href="/transactions" class="nav-item active"><i class="bi bi-arrow-left-right"></i> Giao dịch</a>
+            <a href="/bank" class="nav-item "><i class="bi bi-bank"></i> Ngân hàng</a>
+            <a href="/qr-generator" class="nav-item "><i class="bi bi-qr-code-scan"></i> Tạo QR</a>
+            
+            
+            <div class="mt-4 pt-3 border-top border-secondary">
+                <a href="/blockchain" class="nav-item  text-success"><i class="bi bi-box-seam"></i> Sổ cái Blockchain</a>
+                <a href="/admin_panel" class="nav-item  text-warning"><i class="bi bi-shield-lock-fill"></i> Bảng Quản trị</a>
+                <a href="/settings" class="nav-item  text-info"><i class="bi bi-gear-fill"></i> Cấu hình Hệ thống</a>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-nav">
+            <div class="nav-left">
+                <i class="bi bi-list fs-4" id="sidebarToggle" style="cursor: pointer;"></i>
+                <h5 class="m-0 fw-bold ms-2 text-body-emphasis">Danh sách giao dịch</h5>
+                <div class="dropdown d-inline-block ms-3">
+                    <span class="quick-menu" data-bs-toggle="dropdown" aria-expanded="false">
+                        Menu nhanh <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+                    </span>
+                    <div class="dropdown-menu shadow border-0" style="width: 500px; padding: 20px; border-radius: 8px; margin-top: 10px; background-color: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color) !important;">
+                        <div class="row">
+                            <div class="col-4">
+                                <h6 class="text-muted small fw-bold mb-3">Dashboard</h6>
+                                <a href="/dashboard" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-grid me-2"></i> Tổng quan</a>
+                                <a href="/bank" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-bank me-2"></i> Ngân hàng</a>
+                                <a href="/qr-generator" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-qr-code me-2"></i> Tạo QR</a>
+                            </div>
+                            <div class="col-4">
+                                <h6 class="text-muted small fw-bold mb-3">Thống kê</h6>
+                                <a href="/statistics" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-bar-chart me-2"></i> Thống kê sử dụng</a>
+                            </div>
+                            <div class="col-4">
+                                <h6 class="text-muted small fw-bold mb-3">Cấu hình</h6>
+                                <a href="/company_profile" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-building me-2"></i> Hồ sơ công ty</a>
+                                <a href="/account" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-person me-2"></i> Tài khoản</a>
+                                <a href="/users" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-people me-2"></i> Quản lý người dùng</a>
+                                
+                                <a href="/admin_panel" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-shield-lock me-2"></i> Bảng Quản trị</a>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                
+                <a href="#" class="text-primary text-decoration-none small"><i class="bi bi-gift me-1"></i> Ưu đãi</a>
+                <a href="/upgrade" class="text-warning text-decoration-none small fw-bold"><i class="bi bi-star-fill me-1"></i> Nâng cấp</a>
+                <span class="small text-success"><i class="bi bi-wallet2 me-1"></i> Số dư: 0đ</span>
+                
+                <div class="dropdown d-inline-block">
+                    <i class="bi bi-bell text-secondary fs-5 cursor-pointer position-relative" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    </i>
+                    <div class="dropdown-menu dropdown-menu-end shadow border-0" style="width: 350px; padding: 0; border-radius: 8px; margin-top: 15px; background-color: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color) !important;">
+                        <div class="d-flex justify-content-between align-items-center p-3 border-bottom border-secondary-subtle">
+                            <h6 class="m-0 fw-bold text-body-emphasis">Thông báo</h6>
+                            <a href="#" class="text-decoration-none small text-muted"><i class="bi bi-check2-all me-1"></i>Đánh dấu tất cả đã đọc</a>
+                        </div>
+                        <ul class="nav nav-tabs nav-justified border-secondary-subtle" style="font-size: 14px;">
+                            <li class="nav-item">
+                                <a class="nav-link active text-body-emphasis fw-semibold bg-transparent border-secondary-subtle" href="#" style="border-radius: 0; border-top: 0; border-left: 0;"><i class="bi bi-asterisk"></i> Tất cả</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-muted" href="#" style="border-radius: 0; border-top: 0;"><i class="bi bi-bell"></i> Thông báo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-muted" href="#" style="border-radius: 0; border-top: 0; border-right: 0;"><i class="bi bi-gift"></i> Ưu đãi</a>
+                            </li>
+                        </ul>
+                        <div class="text-center p-5">
+                            <div class="mb-3">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle text-primary" style="width: 60px; height: 60px; font-size: 24px;">
+                                    <i class="bi bi-inbox"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0">Hiện chưa có thông báo nào</p>
+                        </div>
+                        <div class="border-top text-center p-2">
+                            <a href="#" class="text-decoration-none text-muted small">Hiển thị tất cả</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown d-inline-block">
+                    <i class="bi bi-sun text-secondary fs-5 cursor-pointer theme-icon" data-bs-toggle="dropdown" aria-expanded="false" id="themeDropdownIcon" style="cursor: pointer;"></i>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="min-width: 150px; border-radius: 8px; margin-top: 15px; background-color: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color) !important;">
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 theme-switch py-2 text-body-emphasis" href="#" data-theme="light"><i class="bi bi-sun"></i> Sáng</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 theme-switch py-2 text-body-emphasis" href="#" data-theme="dark"><i class="bi bi-moon-stars"></i> Tối</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 theme-switch py-2 text-body-emphasis" href="#" data-theme="auto"><i class="bi bi-circle-half"></i> Tự động</a></li>
+                    </ul>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="d-flex align-items-center gap-1 cursor-pointer dropdown-toggle-custom" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                        
+                        
+                        
+                        
+                        <div class="user-avatar-sm mb-0 ms-2" id="userAvatarInitials">DÙ</div>
+                        <span class="fw-semibold text-body-emphasis small"><span id="userFullName">Người dùng</span> <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i></span>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="width: 260px; border-radius: 8px; background-color: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color) !important;">
+                        <li class="px-3 py-3 border-bottom border-secondary-subtle mb-2">
+                            <a href="/company_profile" class="text-decoration-none text-body-emphasis d-block">
+                                <span class="fw-bold" id="dropdownUserName">Người dùng</span>
+                                
+                                <span class="badge bg-danger ms-2">ADMIN</span>
+                                
+                            </a>
+                        </li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="/account"><i class="bi bi-person me-3 fs-5"></i> Tài khoản</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="/users"><i class="bi bi-people me-3 fs-5"></i> Quản lý người dùng</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="#"><i class="bi bi-box me-3 fs-5"></i> Gói dịch vụ</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="#"><i class="bi bi-receipt me-3 fs-5"></i> Thanh toán</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="/statistics"><i class="bi bi-bar-chart me-3 fs-5"></i> Thống kê sử dụng</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="#"><i class="bi bi-star me-3 fs-5"></i> Nâng cấp</a></li>
+                        <li><hr class="dropdown-divider mt-2 mb-2"></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-3 fs-5"></i> Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="page-body">
+            
+<div class="container-fluid">
+    <!-- Top Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="summary-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted fw-semibold">Tiền vào</span>
+                    <i class="bi bi-arrow-down-left-circle text-success fs-5"></i>
+                </div>
+                <div class="summary-value positive" id="total-in">+0 đ</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="summary-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted fw-semibold">Tiền ra</span>
+                    <i class="bi bi-arrow-up-right-circle text-danger fs-5"></i>
+                </div>
+                <div class="summary-value negative" id="total-out">-0 đ</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="summary-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted fw-semibold">Chênh lệch</span>
+                    <i class="bi bi-wallet2 text-primary fs-5"></i>
+                </div>
+                <div class="summary-value neutral" id="total-balance">+0 đ</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <!-- Search -->
+            <div class="input-group" style="width: 250px;">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="searchInput" placeholder="Nội dung, mã tham chiếu">
+            </div>
+            
+            <!-- Account -->
+            <select class="form-select" id="accountSelect" style="width: 200px;">
+                <option value="ALL">Tất cả tài khoản</option>
+                
+                <option value="96247HOATHUI" selected>BIDV - 96247HOATHUI</option>
+                
+            </select>
+            
+            <!-- Date Range -->
+            <div class="input-group" style="width: 220px;">
+                <span class="input-group-text bg-white"><i class="bi bi-calendar3"></i></span>
+                <input type="text" id="dateRange" class="form-control" placeholder="Thời gian">
+            </div>
+            
+            <!-- Filter buttons -->
+            <button class="btn btn-outline-secondary btn-sm bg-white text-dark"><i class="bi bi-funnel"></i> Tiền vào</button>
+            <button class="btn btn-outline-secondary btn-sm bg-white text-dark"><i class="bi bi-funnel"></i> Tiền ra</button>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <!-- Column Toggle -->
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary bg-white" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                    <i class="bi bi-layout-three-columns"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-columns shadow" id="columnToggleMenu">
+                    <h6 class="dropdown-header">HIỂN THỊ CỘT</h6>
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+            <!-- Export -->
+            <button class="btn btn-outline-secondary bg-white text-dark" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="bi bi-download me-1"></i> Xuất file
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" id="txTable">
+            <thead>
+                <tr>
+                    <th data-col="id">ID</th>
+                    <th data-col="time">THỜI GIAN</th>
+                    <th data-col="account">TÀI KHOẢN</th>
+                    <th data-col="virtual_account">TÀI KHOẢN ẢO</th>
+                    <th data-col="amount">SỐ TIỀN</th>
+                    <th data-col="cumulative">LŨY KẾ</th>
+                    <th data-col="desc">NỘI DUNG</th>
+                    <th data-col="payment_code">MÃ THANH TOÁN</th>
+                    <th data-col="ref_code">MÃ THAM CHIẾU</th>
+                    <th data-col="auto">TỰ ĐỘNG</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">210f7de1-0b12-44f1-97cf-3498efb3d41a</td>
+                    <td data-col="time" class="text-muted">31/05/2026 00:02:48</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="50000">
+                        +50.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted"></small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">0000d2d9d15789435902a9ea179d090a58088b53819bd48805bb47a9a01edb5e</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">80c0b286-0082-4acb-ae43-4e18bdcc1470</td>
+                    <td data-col="time" class="text-muted">30/05/2026 23:50:30</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="200000">
+                        +200.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">Thu hộ DH6024</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">000060ca5f6ee3014525afccb23dd624a0d0</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">f4c13f13-1000-4efc-a2e5-9bd35ce0ea12</td>
+                    <td data-col="time" class="text-muted">30/05/2026 11:50:30</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="200000">
+                        +200.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">Thu hộ DH9183</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">0000feae7218ebe0412dbdaa92508afaeeb4</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">ace49a4a-8481-4be2-a290-6b7bed036c85</td>
+                    <td data-col="time" class="text-muted">29/05/2026 23:50:30</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="300000">
+                        +300.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">Thu hộ DH9246</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">00007e8cb509e17a472db503a0da8e580c85</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">a0dd65c0-db08-4a3c-bfa7-4d87eb551ce1</td>
+                    <td data-col="time" class="text-muted">29/05/2026 11:50:30</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="1000000">
+                        +1.000.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">Thu hộ DH5075</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">00002bf70fa117264ea387e3c619e61be732</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">bb767f89-6170-426e-8a5a-290872c0a26d</td>
+                    <td data-col="time" class="text-muted">28/05/2026 23:50:30</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="50000">
+                        +50.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">Thu hộ DH7390</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">00004fbff4c9a728445fb005aae96790d682</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">TX_83E08745</td>
+                    <td data-col="time" class="text-muted">28/05/2026 11:59:08</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="50000">
+                        +50.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">gfg</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">0e139a982525ac7293f791253e4b43da9a1f4529f5de5c87c44162123bec0475</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">ee6a3410-4b94-44af-b01d-f5c38ddad121</td>
+                    <td data-col="time" class="text-muted">28/05/2026 11:50:30</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="1000000">
+                        +1.000.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">Thu hộ DH5407</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">0000b2d0b2b8d8ed4559854b1c7fc6ade99a</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">c7699b3f-810d-40b5-8c04-9dfb94dab6b7</td>
+                    <td data-col="time" class="text-muted">27/05/2026 23:50:30</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-success" data-value="1000000">
+                        +1.000.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">Thu hộ DH8815</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">00004e1c8877eae9454aa3925b582f1b2aeb</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                <tr class="tx-row" data-account="96247HOATHUI">
+                    <td data-col="id">9bc5ff70-c52c-4950-9e29-41ec4a24c51d</td>
+                    <td data-col="time" class="text-muted">27/05/2026 11:50:30</td>
+                    <td data-col="account">
+                        <span class="bank-logo"><i class="bi bi-bank"></i></span> 96247HOATHUI
+                    </td>
+                    <td data-col="virtual_account"></td>
+                    <td data-col="amount" class="fw-bold text-danger" data-value="-200000">
+                        -200.000 đ
+                    </td>
+                    <td data-col="cumulative">—</td>
+                    <td data-col="desc"><small class="text-muted">Hoàn tiền / Chuyển khoản DH4253</small></td>
+                    <td data-col="payment_code">—</td>
+                    <td data-col="ref_code"><small class="text-muted" style="font-family: monospace;">00007b7d42da10714b7eb7006296608c0c38</small></td>
+                    <td data-col="auto">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 20px;">
+                            <i class="bi bi-lightning-charge-fill me-1"></i> Webhook
+                        </span>
+                    </td>
+                </tr>
+                
+                
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-5">
+        <div class="d-flex align-items-center text-muted small">
+            Hiển thị 
+            <select class="form-select form-select-sm mx-2" style="width: 70px;" id="pageSize">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select> 
+            dòng. Hiển thị 1 - <span id="visibleCount">0</span> / <span id="totalCount">10</span> giao dịch
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-0">
+                <h5 class="modal-title fw-bold">Xuất dữ liệu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Tài khoản</label>
+                    <select class="form-select border-secondary">
+                        <option>Tất cả tài khoản</option>
+                        
+                        <option selected>BIDV - 96247HOATHUI</option>
+                        
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold">Khoảng thời gian</label>
+                    <input type="text" class="form-control border-secondary" value="Hôm nay">
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Ngân hàng</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Chủ tài khoản</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Thời gian</label></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Tiền</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Nội dung</label></div>
+                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked> <label class="form-check-label text-muted">Mã tham chiếu</label></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer p-0 border-0">
+                <button type="button" class="btn btn-primary w-100 m-0 py-3 rounded-0 rounded-bottom fw-bold" onclick="alert('Đang xuất file Excel...')">
+                    <i class="bi bi-download me-2"></i> Xuất file
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('mainContent').classList.toggle('expanded');
+        });
+
+        function logout() {
+            fetch('/api/logout')
+            .then(res => res.json())
+            .then(data => {
+                localStorage.removeItem('registered_name');
+                window.location.href = '/';
+            });
+        }
+
+        // --- THEME SWITCHER LOGIC ---
+        const getPreferredTheme = () => {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme) {
+                return storedTheme;
+            }
+            return 'light'; // Ép mặc định là nền sáng (light) thay vì theo hệ điều hành
+        }
+
+        const setTheme = theme => {
+            if (theme === 'auto') {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-bs-theme', 'light');
+                }
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            }
+            updateThemeIcon(theme);
+        }
+
+        const updateThemeIcon = theme => {
+            const icon = document.getElementById('themeDropdownIcon');
+            if (!icon) return;
+            if (theme === 'dark') {
+                icon.className = 'bi bi-moon-stars text-secondary fs-5 cursor-pointer theme-icon';
+            } else if (theme === 'light') {
+                icon.className = 'bi bi-sun text-secondary fs-5 cursor-pointer theme-icon';
+            } else {
+                icon.className = 'bi bi-circle-half text-secondary fs-5 cursor-pointer theme-icon';
+            }
+            
+            document.querySelectorAll('.theme-switch').forEach(el => {
+                if(el.getAttribute('data-theme') === theme) {
+                    el.classList.add('active', 'bg-primary', 'text-white');
+                    el.classList.remove('text-dark');
+                } else {
+                    el.classList.remove('active', 'bg-primary', 'text-white');
+                    el.classList.add('text-dark');
+                }
+            });
+        }
+
+        setTheme(getPreferredTheme());
+
+        document.querySelectorAll('.theme-switch').forEach(element => {
+            element.addEventListener('click', (e) => {
+                e.preventDefault();
+                const theme = element.getAttribute('data-theme');
+                localStorage.setItem('theme', theme);
+                setTheme(theme);
+            })
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme !== 'light' && storedTheme !== 'dark') {
+                setTheme(getPreferredTheme());
+            }
+        });
+    </script>
+    
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    const columns = [
+        { id: 'id', label: 'ID', default: true },
+        { id: 'time', label: 'Thời gian', default: true },
+        { id: 'account', label: 'Tài khoản', default: true },
+        { id: 'virtual_account', label: 'Tài khoản ảo', default: true },
+        { id: 'amount', label: 'Số tiền', default: true },
+        { id: 'cumulative', label: 'Lũy kế', default: true },
+        { id: 'desc', label: 'Nội dung', default: true },
+        { id: 'payment_code', label: 'Mã thanh toán', default: true },
+        { id: 'ref_code', label: 'Mã tham chiếu', default: true },
+        { id: 'auto', label: 'Tự động', default: true }
+    ];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Init DatePicker
+        flatpickr("#dateRange", { mode: "range", dateFormat: "d/m/Y" });
+
+        // Build Column Toggler Menu
+        const menu = document.getElementById('columnToggleMenu');
+        columns.forEach(col => {
+            let div = document.createElement('div');
+            div.className = 'form-check ms-3 mb-2';
+            div.innerHTML = `<input class="form-check-input col-toggle" type="checkbox" value="${col.id}" id="chk_${col.id}" checked>
+                             <label class="form-check-label text-dark" for="chk_${col.id}">${col.label}</label>`;
+            menu.appendChild(div);
+        });
+
+        // Toggle Column Logic
+        document.querySelectorAll('.col-toggle').forEach(chk => {
+            chk.addEventListener('change', function() {
+                const colId = this.value;
+                const isChecked = this.checked;
+                document.querySelectorAll(`[data-col="${colId}"]`).forEach(el => {
+                    if(isChecked) el.classList.remove('d-none');
+                    else el.classList.add('d-none');
+                });
+            });
+            // Stop propagation so menu doesn't close on click
+            chk.addEventListener('click', e => e.stopPropagation());
+        });
+        
+        // Filter Logic (Search & Account)
+        function applyFilters() {
+            let query = document.getElementById('searchInput').value.toLowerCase();
+            let accFilter = document.getElementById('accountSelect').value;
+            let rows = document.querySelectorAll('.tx-row');
+            
+            let totalIn = 0;
+            let totalOut = 0;
+            let count = 0;
+            
+            rows.forEach(row => {
+                let show = true;
+                let text = row.innerText.toLowerCase();
+                let acc = row.getAttribute('data-account');
+                
+                if (query && !text.includes(query)) show = false;
+                if (accFilter !== 'ALL' && acc !== accFilter) show = false;
+                
+                if (show) {
+                    row.classList.remove('d-none');
+                    count++;
+                    // Add to summary
+                    let amtEl = row.querySelector('[data-col="amount"]');
+                    if (amtEl) {
+                        let val = parseFloat(amtEl.getAttribute('data-value'));
+                        if (val > 0) totalIn += val;
+                        else totalOut += Math.abs(val);
+                    }
+                } else {
+                    row.classList.add('d-none');
+                }
+            });
+            
+            document.getElementById('visibleCount').innerText = count;
+            
+            // Format numbers
+            const format = (n) => new Intl.NumberFormat('vi-VN').format(n) + ' đ';
+            document.getElementById('total-in').innerText = '+' + format(totalIn);
+            document.getElementById('total-out').innerText = '-' + format(totalOut);
+            let bal = totalIn - totalOut;
+            document.getElementById('total-balance').innerText = (bal > 0 ? '+' : '') + format(bal);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('accountSelect').addEventListener('change', applyFilters);
+        
+        // Handle Row per page
+        document.getElementById('pageSize').addEventListener('change', function() {
+            let size = parseInt(this.value);
+            let rows = document.querySelectorAll('.tx-row');
+            rows.forEach((row, index) => {
+                if(index >= size) row.classList.add('d-none');
+                else row.classList.remove('d-none');
+            });
+            // This is a simplified client-side pagination
+        });
+
+        // Initial run
+        applyFilters();
+    });
+</script>
+
+</body>
+</html>

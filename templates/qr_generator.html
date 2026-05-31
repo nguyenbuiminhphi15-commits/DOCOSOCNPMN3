@@ -1,0 +1,649 @@
+{% extends 'base.html' %}
+
+{% block title %}Tạo mã QR thanh toán - HUTECH Secure QR{% endblock %}
+{% block page_title %}Tạo QR{% endblock %}
+{% block nav_qr %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Custom Theme overrides */
+    body {
+        background-color: var(--bs-secondary-bg) !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    .usage-card {
+        border: 2px solid var(--bs-border-color);
+        border-radius: 8px;
+        padding: 15px;
+        cursor: pointer;
+        background-color: var(--bs-body-bg);
+        transition: all 0.2s;
+    }
+
+    .usage-card:hover {
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    .usage-card.active {
+        border-color: #0d6efd;
+        background-color: var(--bs-primary-bg-subtle);
+    }
+
+    .qr-preview-card {
+        border: 1px solid var(--bs-border-color);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        background: var(--bs-body-bg);
+    }
+
+    .quick-amount-btn {
+        background: var(--bs-secondary-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-size: 14px;
+        color: var(--bs-secondary-color);
+        margin-right: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .quick-amount-btn:hover {
+        background: var(--bs-tertiary-bg);
+        color: var(--bs-emphasis-color);
+    }
+
+    .qr-style-btn {
+        border: 1px solid var(--bs-border-color);
+        background: var(--bs-body-bg);
+        padding: 10px 0;
+        border-radius: 8px;
+        color: var(--bs-secondary-color);
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .qr-style-btn.active {
+        border-color: #0d6efd;
+        color: #0d6efd;
+        background: var(--bs-primary-bg-subtle);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row min-vh-100 p-4 bg-body"
+    style="border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+    <div class="col-lg-7 pe-lg-5">
+        <h3 class="fw-bold mb-1">Tạo mã QR thanh toán</h3>
+        <p class="text-muted mb-4">Chọn tài khoản, tùy chỉnh nội dung và quét mã để chuyển khoản</p>
+
+        <h6 class="fw-bold mb-3">Mục đích sử dụng</h6>
+        <div class="row mb-4">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+                <div class="usage-card active d-flex align-items-start" onclick="setUsageMode('online', this)">
+                    <i class="bi bi-globe text-primary fs-4 me-3"></i>
+                    <div>
+                        <div class="fw-bold">QR online</div>
+                        <div class="text-muted small">Tích hợp website, gửi mã QR online</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="usage-card d-flex align-items-start" onclick="setUsageMode('standee', this)">
+                    <i class="bi bi-easel text-primary fs-4 me-3"></i>
+                    <div>
+                        <div class="fw-bold">In Standee</div>
+                        <div class="text-muted small">In dán mã QR thanh toán cho quầy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="fw-bold mb-2">Tài khoản ngân hàng <span class="text-danger">*</span></h6>
+        <div class="mb-4">
+            <select class="form-select form-select-lg border-secondary-subtle bg-body-tertiary" id="bank-account-select">
+                <option value="BIDV">BIDV — NGUYEN DINH HOA (8898995935)</option>
+            </select>
+        </div>
+
+        <h6 class="fw-bold mb-2">Tài khoản ảo (VA) <span class="text-danger">(*)</span></h6>
+        <div class="mb-2">
+            <select class="form-select form-select-lg border-secondary-subtle bg-body-tertiary" id="va-select">
+                <option value="96247HOATHUI">96247HOATHUI - HÒA THÚI</option>
+            </select>
+        </div>
+        <div class="text-muted small mb-3">BIDV yêu cầu chọn VA để tạo QR</div>
+
+        <h6 class="fw-bold mb-2">Cửa hàng / API Key <span class="text-danger">*</span></h6>
+        <div class="mb-4">
+            <select class="form-select form-select-lg border-secondary-subtle bg-body-tertiary" id="api-token-select">
+                {% for t in tokens %}
+                <option value="{{ t.id }}">{{ t.name }}</option>
+                {% endfor %}
+            </select>
+            <div class="text-muted small mt-1">Chọn chìa khóa API để Mắt thần dò đúng cửa hàng.</div>
+        </div>
+
+        <div class="form-check form-switch mb-4">
+            <input class="form-check-input" type="checkbox" id="showFullAcc">
+            <label class="form-check-label text-secondary fw-medium" for="showFullAcc">Đồng ý hiển thị toàn bộ số tài
+                khoản tại VietQR</label>
+        </div>
+
+        <h6 class="fw-bold mb-2">Tên cửa hàng / Tên công ty <span class="text-muted fw-normal">— không bắt
+                buộc</span></h6>
+        <div class="mb-4">
+            <input type="text" class="form-control form-control-lg border-secondary-subtle bg-body-tertiary" id="store-name"
+                placeholder="VD: Cửa hàng An Phát" oninput="updateStoreName()">
+            <div class="text-muted small mt-1">Hiển thị trên thẻ Standee ngay cạnh số tài khoản</div>
+        </div>
+
+        <h6 class="fw-bold mb-2">Số tiền (VND) <span class="text-muted fw-normal">— không bắt buộc</span></h6>
+        <div class="mb-2 position-relative">
+            <input type="text" class="form-control form-control-lg border-secondary-subtle bg-body-tertiary" id="amount"
+                placeholder="VD: 100.000">
+            <span class="position-absolute text-muted"
+                style="right: 15px; top: 50%; transform: translateY(-50%);">đ</span>
+        </div>
+        <div class="d-flex flex-wrap mb-4">
+            <div class="quick-amount-btn" onclick="setAmount('10000')">10.000 đ</div>
+            <div class="quick-amount-btn" onclick="setAmount('50000')">50.000 đ</div>
+            <div class="quick-amount-btn" onclick="setAmount('100000')">100.000 đ</div>
+            <div class="quick-amount-btn" onclick="setAmount('200000')">200.000 đ</div>
+            <div class="quick-amount-btn" onclick="setAmount('500000')">500.000 đ</div>
+        </div>
+
+        <h6 class="fw-bold mb-2">Nội dung chuyển khoản <span class="text-muted fw-normal">— không bắt
+                buộc</span></h6>
+        <div class="mb-4">
+            <input type="text" class="form-control form-control-lg border-secondary-subtle bg-body-tertiary" id="description"
+                placeholder="VD: Thanh toan don hang DH001">
+        </div>
+
+        <button type="button" id="btn-generate-qr" class="btn btn-primary w-100 py-3 mt-3 fw-bold fs-5 shadow-sm"
+            onclick="generateAndListen(event)">
+            <i class="bi bi-qr-code-scan me-2"></i> TẠO MÃ & CHỜ THANH TOÁN
+        </button>
+    </div>
+
+    <div class="col-lg-5 border-start border-light-subtle ps-lg-5 mt-5 mt-lg-0">
+        <div id="template-options" class="d-flex justify-content-between mb-4 text-center">
+            <div class="w-100 pe-2">
+                <div class="qr-style-btn active" onclick="setTemplate('compact', this)">
+                    <i class="bi bi-card-image d-block fs-5 mb-1"></i>
+                    Đầy đủ
+                </div>
+            </div>
+            <div class="w-100 px-1">
+                <div class="qr-style-btn" onclick="setTemplate('compact', this)">
+                    <i class="bi bi-layout-text-window-reverse d-block fs-5 mb-1"></i>
+                    Thu gọn
+                </div>
+            </div>
+            <div class="w-100 ps-2">
+                <div class="qr-style-btn" onclick="setTemplate('qr_only', this)">
+                    <i class="bi bi-qr-code d-block fs-5 mb-1"></i>
+                    Chỉ QR
+                </div>
+            </div>
+        </div>
+
+        <div class="qr-preview-card shadow-sm mb-4 mx-auto"
+            style="border-radius: 12px; padding: 30px 20px; max-width: 340px; transition: all 0.3s;"
+            id="custom-qr-card">
+
+            <div id="initial-placeholder" class="text-center py-5 text-muted">
+                <i class="bi bi-qr-code text-secondary mb-3" style="font-size: 60px; opacity: 0.3;"></i>
+                <h5 class="fw-bold">Chưa tạo mã QR</h5>
+                <p class="small mb-0 text-secondary">Vui lòng nhập thông tin và bấm<br><strong class="text-primary">Tạo
+                        mã & chờ thanh toán</strong></p>
+            </div>
+
+            <div id="qr-display-area" class="d-none w-100">
+                <div id="standee-wrapper" style="border-radius: 20px; padding: 0px; background: transparent;">
+                    <div id="standee-inner" style="background: #ffffff; border-radius: 16px; padding: 10px; height: 100%;">
+                        <div class="text-center mb-1">
+                            <h4 style="color: #195ed8; font-weight: 900; letter-spacing: -0.5px; margin: 0;">
+                                <i class="bi bi-bezier2"></i> SePay
+                            </h4>
+                            <div class="text-primary mt-1" style="font-size: 11px; font-style: italic;" id="standee-tagline">Chuyển khoản ngay, xác nhận sau vài giây!</div>
+                        </div>
+
+                        <div class="text-center mb-3 mt-3">
+                            <div
+                                style="border: 1px solid #cbd5e1; padding: 8px; display: inline-block; border-radius: 8px; background-color: #fff;">
+                                <img id="qr-preview-img" crossorigin="anonymous"
+                                    src="https://qr.sepay.vn/img?bank=BIDV&acc=96247HOATHUI&template=qr_only" alt="QR Code"
+                                    style="width: 220px; height: 220px; display: block;">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center align-items-center mb-3 text-nowrap" style="font-size: 14px;">
+                            <span
+                                style="color: #004a98; font-weight: 900; font-style: italic; letter-spacing: -0.5px;">napas<span
+                                    style="color: #00a4df;">247</span></span>
+                            <span class="mx-2 text-muted" style="opacity: 0.3;">|</span>
+                            <span style="color: #0f6c5c; font-weight: 900;">BIDV</span>
+                            <span class="mx-2 text-muted" style="opacity: 0.3;">|</span>
+                            <span style="color: #ed1c24; font-weight: 900; letter-spacing: -0.5px;">VIET<span
+                                    style="color: #004a98;">QR</span><sup style="font-size: 8px;">™</sup></span>
+                        </div>
+
+                        <div id="qr-text-info" class="text-center" style="font-size: 13px; line-height: 1.6;">
+                            <div class="text-secondary">Tên chủ TK: <span class="fw-bold text-dark" id="display-acc-name">NGUYEN
+                                    DINH HOA</span></div>
+                            <div class="text-secondary d-none mt-1" id="display-store-name-container">Cửa hàng: <span class="fw-bold text-dark" id="display-store-name"></span></div>
+                            <div class="fw-bold mt-1" style="color: #0d6efd; font-size: 14px;">Số TK: <span
+                                    id="display-acc-number">96247HOATHUI</span></div>
+                            <div class="text-muted mt-2" style="font-size: 11px;">Ngân hàng TMCP Đầu tư và Phát triển Việt Nam
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="success-display-area" class="text-center d-none py-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 80px;"></i>
+                <h4 class="fw-bold text-success mt-3 mb-2">Giao dịch thành công!</h4>
+                <p class="text-muted small" id="success-desc">Đã nhận được tiền thanh toán</p>
+                <button class="btn btn-outline-success mt-3 rounded-pill px-4" onclick="resetQR()">Tạo mã mới</button>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-center mb-4">
+            <button class="btn btn-outline-primary flex-grow-1" onclick="copyQR()"><i class="bi bi-copy"></i> Copy</button>
+            <button class="btn btn-outline-primary flex-grow-1" onclick="downloadQR()"><i class="bi bi-download"></i> Tải</button>
+            <button class="btn btn-outline-primary flex-grow-1" onclick="printQR()"><i class="bi bi-printer"></i> In</button>
+            <button id="embed-btn" class="btn btn-outline-secondary flex-grow-1" onclick="showEmbedModal()"><i class="bi bi-code-slash"></i> Nhúng</button>
+        </div>
+
+        <h6 class="fw-bold text-muted small text-uppercase mb-2">URL mã QR</h6>
+        <div class="input-group mb-4">
+            <input type="text" class="form-control bg-light text-secondary small border-secondary-subtle"
+                id="qr-url-input" value="https://qr.sepay.vn/img?bank=BIDV&acc=96247HOATHUI&template=compact" readonly
+                style="font-size: 13px;">
+            <button class="btn btn-outline-secondary" onclick="copyQRUrl()"><i class="bi bi-clipboard"></i></button>
+            <button class="btn btn-outline-secondary" onclick="openQRUrl()"><i class="bi bi-box-arrow-up-right"></i></button>
+        </div>
+
+        <h6 class="fw-bold text-dark mb-2">Trong đó</h6>
+        <ul class="text-secondary small ps-3" style="line-height: 1.8;">
+            <li><span class="text-primary bg-primary bg-opacity-10 px-1 roundedfw-bold">bank</span> : Tên ngân hàng nhận
+                tiền.</li>
+            <li><span class="text-primary bg-primary bg-opacity-10 px-1 roundedfw-bold">acc</span> : Số tài khoản thụ
+                hưởng.</li>
+            <li><span class="text-primary bg-primary bg-opacity-10 px-1 roundedfw-bold">template</span> : Kiểu hiển thị
+                ảnh QR.</li>
+            <li><span class="text-primary bg-primary bg-opacity-10 px-1 roundedfw-bold">amount</span> : Số tiền chuyển
+                khoản, nếu có.</li>
+            <li><span class="text-primary bg-primary bg-opacity-10 px-1 roundedfw-bold">des</span> : Nội dung chuyển
+                khoản, nếu có.</li>
+            <li><span class="text-primary bg-primary bg-opacity-10 px-1 roundedfw-bold">mask</span> : Ẩn đi một phần số
+                tài khoản (1 = ẩn).</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Modal Nhúng -->
+<div class="modal fade" id="embedModal" tabindex="-1" aria-labelledby="embedModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title fw-bold" id="embedModalLabel"><i class="bi bi-code-slash"></i> Mã nhúng QR</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="text-muted small mb-4">Sao chép một trong các snippet sau để nhúng mã QR:</p>
+        
+        <h6 class="fw-bold fs-6 mb-2">HTML <span class="badge bg-light text-secondary border fw-normal">&lt;img&gt;</span></h6>
+        <div class="mb-4">
+            <textarea id="embed-html" class="form-control bg-light text-secondary small border-secondary-subtle" rows="2" readonly style="font-family: monospace; font-size: 13px; resize: none;"></textarea>
+            <button class="btn btn-sm btn-outline-secondary mt-2 px-3" onclick="copyEmbed('embed-html')"><i class="bi bi-clipboard"></i> Sao chép</button>
+        </div>
+
+        <h6 class="fw-bold fs-6 mb-2">Markdown</h6>
+        <div class="mb-4">
+            <textarea id="embed-markdown" class="form-control bg-light text-secondary small border-secondary-subtle" rows="2" readonly style="font-family: monospace; font-size: 13px; resize: none;"></textarea>
+            <button class="btn btn-sm btn-outline-secondary mt-2 px-3" onclick="copyEmbed('embed-markdown')"><i class="bi bi-clipboard"></i> Sao chép</button>
+        </div>
+
+        <h6 class="fw-bold fs-6 mb-2">URL trực tiếp</h6>
+        <div class="mb-2">
+            <textarea id="embed-url" class="form-control bg-light text-secondary small border-secondary-subtle" rows="2" readonly style="font-family: monospace; font-size: 13px; resize: none;"></textarea>
+            <button class="btn btn-sm btn-outline-secondary mt-2 px-3" onclick="copyEmbed('embed-url')"><i class="bi bi-clipboard"></i> Sao chép</button>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-0 pe-4 pb-4">
+        <button type="button" class="btn btn-dark px-4" data-bs-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    // Giữ nguyên phần logic JS cũ của bạn...
+    let currentTemplate = 'compact';
+    let currentUsageMode = 'online';
+
+    function setUsageMode(mode, el) {
+        currentUsageMode = mode;
+        document.querySelectorAll('.usage-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+
+        let customCard = document.getElementById('custom-qr-card');
+        let standeeWrapper = document.getElementById('standee-wrapper');
+        let tagline = document.getElementById('standee-tagline');
+
+        if (mode === 'standee') {
+            document.getElementById('template-options').classList.add('d-none');
+            document.getElementById('embed-btn').classList.add('d-none');
+            
+            customCard.style.padding = '10px';
+            customCard.style.border = 'none';
+            standeeWrapper.style.padding = '6px';
+            standeeWrapper.style.background = 'linear-gradient(135deg, #8dc63f 0%, #8dc63f 25%, #195ed8 100%)';
+            tagline.classList.remove('d-none');
+        } else {
+            document.getElementById('template-options').classList.remove('d-none');
+            document.getElementById('embed-btn').classList.remove('d-none');
+            
+            customCard.style.padding = '30px 20px';
+            customCard.style.border = '1px solid #cbd5e1';
+            standeeWrapper.style.padding = '0px';
+            standeeWrapper.style.background = 'transparent';
+            tagline.classList.add('d-none');
+        }
+        
+        // Cập nhật lại UI nếu đã tạo QR
+        if (!document.getElementById('qr-display-area').classList.contains('d-none')) {
+            // Re-render display slightly if needed
+        }
+    }
+
+    function updateStoreName() {
+        let storeName = document.getElementById('store-name').value;
+        let displayContainer = document.getElementById('display-store-name-container');
+        let displaySpan = document.getElementById('display-store-name');
+        
+        if (storeName.trim() !== '') {
+            displaySpan.innerText = storeName;
+            displayContainer.classList.remove('d-none');
+        } else {
+            displayContainer.classList.add('d-none');
+        }
+    }
+
+    function setAmount(val) {
+        document.getElementById('amount').value = val;
+    }
+
+    function setTemplate(tmpl, el) {
+        currentTemplate = tmpl;
+        document.querySelectorAll('.qr-style-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function maskAccount(acc) {
+        if (acc.length <= 4) return acc;
+        let first3 = acc.substring(0, 3);
+        let last2 = acc.substring(acc.length - 2);
+        return first3 + '*******' + last2;
+    }
+
+    let checkPaymentInterval;
+
+    function generateAndListen(event) {
+        if (event) event.preventDefault();
+
+        if (typeof checkPaymentInterval !== 'undefined' && checkPaymentInterval !== null) {
+            clearInterval(checkPaymentInterval);
+            checkPaymentInterval = null;
+        }
+
+        let btnGenerate = document.getElementById('btn-generate-qr');
+        if (btnGenerate) btnGenerate.disabled = true;
+
+        let amount = document.getElementById('amount').value.replace(/[^0-9]/g, '') || '0';
+        let desc = document.getElementById('description').value || '';
+        let bankCode = document.getElementById('bank-account-select').value;
+        let bankAcc = document.getElementById('va-select').value;
+        let showFullAcc = document.getElementById('showFullAcc').checked;
+        let tokenId = document.getElementById('api-token-select') ? document.getElementById('api-token-select').value : null;
+
+        let displayAcc = showFullAcc ? bankAcc : maskAccount(bankAcc);
+        document.getElementById('display-acc-number').innerText = displayAcc;
+
+        if (!tokenId) {
+            Swal.fire('Lỗi', 'Vui lòng cấu hình ít nhất 1 API Key trong bảng Cấu hình hệ thống!', 'error');
+            if (btnGenerate) btnGenerate.disabled = false;
+            return;
+        }
+
+        fetch('/api/create-transaction', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ description: desc, amount: amount, token_id: tokenId })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    let finalDesc = data.qr_id;
+
+                    let displayUrl = `https://qr.sepay.vn/img?bank=${bankCode}&acc=${bankAcc}&template=${currentTemplate}`;
+                    if (amount !== '0') displayUrl += `&amount=${amount}`;
+                    displayUrl += `&des=${encodeURIComponent(finalDesc)}`;
+                    if (!showFullAcc) displayUrl += `&mask=1`;
+
+                    let imgUrl = `https://qr.sepay.vn/img?bank=${bankCode}&acc=${bankAcc}&template=qr_only`;
+                    if (amount !== '0') imgUrl += `&amount=${amount}`;
+                    imgUrl += `&des=${encodeURIComponent(finalDesc)}`;
+
+                    document.getElementById('qr-preview-img').src = imgUrl;
+                    document.getElementById('qr-url-input').value = displayUrl;
+
+                    document.getElementById('initial-placeholder').classList.add('d-none');
+                    document.getElementById('success-display-area').classList.add('d-none');
+                    document.getElementById('qr-display-area').classList.remove('d-none');
+
+                    if (btnGenerate) btnGenerate.disabled = false;
+
+                    Swal.fire({
+                        title: 'Đang lắng nghe...',
+                        text: 'Vui lòng đưa mã cho khách quét',
+                        icon: 'info',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+
+                    if (checkPaymentInterval) clearInterval(checkPaymentInterval);
+
+                    checkPaymentInterval = setInterval(function () {
+                        fetch(`/api/check-payment-status?qr_id=${encodeURIComponent(finalDesc)}`)
+                            .then(res => res.json())
+                            .then(statusData => {
+                                if (statusData.success && statusData.status === 'PAID') {
+                                    clearInterval(checkPaymentInterval);
+
+                                    document.getElementById('qr-display-area').classList.add('d-none');
+                                    document.getElementById('success-display-area').classList.remove('d-none');
+                                    document.getElementById('success-desc').innerText = "Mã đơn hàng: " + finalDesc;
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'TING TING!',
+                                        text: 'Đã nhận được tiền thanh toán!',
+                                        confirmButtonText: 'Tuyệt vời',
+                                        confirmButtonColor: '#198754'
+                                    });
+                                }
+                            });
+                    }, 3000);
+
+                } else {
+                    Swal.fire('Lỗi khởi tạo', data.message || 'Không thể tạo mã giao dịch.', 'error');
+                    if (btnGenerate) btnGenerate.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error('Lỗi khi gọi API:', err);
+                Swal.fire('Lỗi hệ thống', 'Không thể kết nối đến máy chủ.', 'error');
+                if (btnGenerate) btnGenerate.disabled = false;
+            });
+    }
+
+    function resetQR() {
+        document.getElementById('success-display-area').classList.add('d-none');
+        document.getElementById('qr-display-area').classList.add('d-none');
+        document.getElementById('initial-placeholder').classList.remove('d-none');
+        document.getElementById('description').value = '';
+    }
+
+    document.getElementById('showFullAcc').addEventListener('change', function () {
+        let savedAcc = document.getElementById('va-select').value;
+        let displayAcc = this.checked ? savedAcc : maskAccount(savedAcc);
+        document.getElementById('display-acc-number').innerText = displayAcc;
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        let savedBank = '{{ user_bank.bank_code if user_bank else "BIDV" }}';
+        let savedAcc = '{{ user_bank.bank_account if user_bank else "96247HOATHUI" }}';
+        let fullName = '{{ user_bank.full_name if user_bank else "NGUYEN DINH HOA" }}';
+
+        let noMarkName = fullName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+
+        let bankSelect = document.getElementById('bank-account-select');
+        let vaSelect = document.getElementById('va-select');
+
+        bankSelect.innerHTML = `<option value="${savedBank}">${savedBank}</option>`;
+        vaSelect.innerHTML = `<option value="${savedAcc}">${savedAcc} - TÀI KHOẢN ẢO</option>`;
+
+        document.getElementById('display-acc-name').innerText = noMarkName;
+
+        let showFullAcc = document.getElementById('showFullAcc').checked;
+        let displayAcc = showFullAcc ? savedAcc : maskAccount(savedAcc);
+        document.getElementById('display-acc-number').innerText = displayAcc;
+    });
+
+    // Chức năng nút Copy / Tải / In
+    function copyQR() {
+        if (currentUsageMode === 'standee') {
+            html2canvas(document.getElementById('standee-wrapper'), { scale: 2, useCORS: true }).then(canvas => {
+                canvas.toBlob(blob => {
+                    navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => {
+                        Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã copy ảnh Standee!', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                    }).catch(err => {
+                        Swal.fire('Lỗi', 'Trình duyệt không hỗ trợ copy ảnh. Vui lòng dùng nút Tải về.', 'error');
+                    });
+                });
+            });
+        } else {
+            let url = document.getElementById('qr-url-input').value;
+            fetch(url)
+                .then(res => res.blob())
+                .then(blob => {
+                    navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => {
+                        Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã copy ảnh QR!', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                    }).catch(err => {
+                        Swal.fire('Lỗi', 'Trình duyệt không hỗ trợ copy ảnh.', 'error');
+                    });
+                }).catch(err => Swal.fire('Lỗi', 'Không thể lấy ảnh từ máy chủ', 'error'));
+        }
+    }
+
+    function downloadQR() {
+        if (currentUsageMode === 'standee') {
+            html2canvas(document.getElementById('standee-wrapper'), { scale: 2, useCORS: true }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'standee_qr.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        } else {
+            let url = document.getElementById('qr-url-input').value;
+            fetch(url)
+                .then(res => res.blob())
+                .then(blob => {
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = 'qrcode.png';
+                    link.click();
+                }).catch(() => {
+                    window.open(url, '_blank'); // fallback if fetch fails due to CORS
+                });
+        }
+    }
+
+    function printQR() {
+        if (currentUsageMode === 'standee') {
+            html2canvas(document.getElementById('standee-wrapper'), { scale: 2, useCORS: true }).then(canvas => {
+                let win = window.open('');
+                win.document.write(`<img src="${canvas.toDataURL()}" style="max-width:100%" onload="window.print();window.close()" />`);
+                win.document.close();
+            });
+        } else {
+            let url = document.getElementById('qr-url-input').value;
+            let win = window.open('');
+            win.document.write(`<img src="${url}" style="max-width:100%" onload="window.print();window.close()" />`);
+            win.document.close();
+        }
+    }
+
+    function copyQRUrl() {
+        let url = document.getElementById('qr-url-input').value;
+        navigator.clipboard.writeText(url).then(() => {
+            Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã copy URL mã QR!', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+        });
+    }
+
+    function openQRUrl() {
+        let url = document.getElementById('qr-url-input').value;
+        if (url) window.open(url, '_blank');
+    }
+
+    // Modal nhúng
+    function showEmbedModal() {
+        let url = document.getElementById('qr-url-input').value;
+        
+        let bankSelect = document.getElementById('bank-account-select');
+        let bankText = bankSelect.options[bankSelect.selectedIndex].text; // e.g. BIDV — NGUYEN DINH HOA (8898995935)
+        let bankName = bankText.split('—')[0].trim();
+        
+        let accNumber = document.getElementById('display-acc-number').innerText;
+        let accName = document.getElementById('display-acc-name').innerText;
+        
+        let altText = `QR thanh toán - ${bankName} - ${accNumber} - ${accName}`;
+        
+        document.getElementById('embed-html').value = `<img src="${url}" alt="${altText}" width="300" />`;
+        document.getElementById('embed-markdown').value = `![${altText}](${url})`;
+        document.getElementById('embed-url').value = url;
+        
+        try {
+            let modal = new bootstrap.Modal(document.getElementById('embedModal'));
+            modal.show();
+        } catch (e) {
+            // Fallback if bootstrap object is not available but jquery is
+            if (window.$) {
+                $('#embedModal').modal('show');
+            } else {
+                console.error("Bootstrap modal initialization failed", e);
+            }
+        }
+    }
+
+    function copyEmbed(id) {
+        let text = document.getElementById(id).value;
+        navigator.clipboard.writeText(text).then(() => {
+            Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã copy mã nhúng!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+        });
+    }
+</script>
+{% endblock %}

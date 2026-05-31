@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Quản lý Sản phẩm - HUTECH Secure QR{% endblock %}
+{% block page_title %}📦 Quản lý Sản phẩm{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-card { background: white; border-radius: 8px; padding: 20px; border: 1px solid #e2e8f0; border-top: 4px solid #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .admin-title { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .admin-table { width: 100%; font-size: 13px; }
+    .admin-table th { background: #f8fafc; color: #475569; padding: 12px; font-weight: 600; border-bottom: 2px solid #e2e8f0; }
+    .admin-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    .admin-table tbody tr:hover { background: #f1f5f9; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-12">
+        <div class="admin-card h-100" style="overflow-y: auto; max-height: 700px;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="admin-title mb-0"><i class="bi bi-box-seam"></i> Danh sách Sản phẩm</div>
+                <button class="btn btn-success btn-sm fw-bold" onclick="showAddProductModal()"><i class="bi bi-plus-circle"></i> Thêm Sản Phẩm</button>
+            </div>
+            <p class="text-muted small">Quản lý danh sách sản phẩm hiển thị trên Cửa hàng (Storefront).</p>
+            
+            <table class="admin-table mt-3" id="productTable">
+                <thead>
+                    <tr>
+                        <th>Mã SP</th>
+                        <th>Hình ảnh</th>
+                        <th>Danh mục</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá bán</th>
+                        <th>Tồn kho</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- Products will be loaded here via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm Sản Phẩm -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Thêm Sản Phẩm Mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addProductForm">
+            <div class="mb-3">
+                <label class="form-label">Mã Sản Phẩm</label>
+                <input type="text" class="form-control" id="p_id" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Danh mục</label>
+                <input type="text" class="form-control" id="p_category" placeholder="Ví dụ: Giày dép, Áo khoác..." required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tên Sản Phẩm</label>
+                <input type="text" class="form-control" id="p_name" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Giá (VNĐ)</label>
+                <input type="number" class="form-control" id="p_price" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Hình Ảnh</label>
+                <input type="file" class="form-control" id="p_images" multiple accept="image/*" required>
+                <div class="form-text">Bạn có thể chọn nhiều hình ảnh cùng lúc.</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tồn kho</label>
+                <input type="number" class="form-control" id="p_stock" value="10">
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" onclick="submitAddProduct()">Lưu Sản Phẩm</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function loadProducts() {
+    fetch('/api/admin/products')
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            let tbody = document.getElementById('productTableBody');
+            tbody.innerHTML = '';
+            data.data.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-bold">${p.id}</td>
+                        <td><img src="${p.image}" width="40" height="40" style="object-fit:cover; border-radius:4px;"></td>
+                        <td><span class="badge bg-secondary">${p.category || 'Chưa phân loại'}</span></td>
+                        <td>${p.name}</td>
+                        <td class="text-primary fw-bold">${p.price.toLocaleString()} đ</td>
+                        <td>${p.stock}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')">
+                                <i class="bi bi-trash"></i> Xóa
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+    });
+}
+
+function showAddProductModal() {
+    var modal = new bootstrap.Modal(document.getElementById('addProductModal'));
+    modal.show();
+}
+
+function submitAddProduct() {
+    let formData = new FormData();
+    formData.append('id', document.getElementById('p_id').value);
+    formData.append('category', document.getElementById('p_category').value);
+    formData.append('name', document.getElementById('p_name').value);
+    formData.append('price', document.getElementById('p_price').value);
+    formData.append('stock', document.getElementById('p_stock').value);
+    
+    let fileInput = document.getElementById('p_images');
+    for (let i = 0; i < fileInput.files.length; i++) {
+        formData.append('images', fileInput.files[i]);
+    }
+    
+    fetch('/api/admin/products', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            Swal.fire('Thành công', data.message, 'success');
+            bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+            loadProducts();
+            document.getElementById('addProductForm').reset();
+        } else {
+            Swal.fire('Lỗi', data.message, 'error');
+        }
+    });
+}
+
+function deleteProduct(id) {
+    Swal.fire({
+        title: 'Xóa sản phẩm?',
+        text: "Bạn không thể hoàn tác hành động này!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/api/admin/products/' + id, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    Swal.fire('Đã xóa', data.message, 'success');
+                    loadProducts();
+                } else {
+                    Swal.fire('Lỗi', data.message, 'error');
+                }
+            });
+        }
+    });
+}
+
+// Load products on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadProducts();
+});
+</script>
+{% endblock %}

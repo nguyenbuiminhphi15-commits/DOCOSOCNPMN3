@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    <title>{% block title %}HUTECH Secure QR{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        [data-bs-theme="light"] {
+            --bs-body-bg: #f4f6f9;
+            --bs-secondary-bg: #ffffff;
+            --bs-tertiary-bg: #f8fafc;
+            --bs-border-color: #e2e8f0;
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #1a1d27;
+            --bs-secondary-bg: #252b3b;
+            --bs-tertiary-bg: #1e2330;
+            --bs-border-color: #333b4d;
+            --bs-body-color: #cbd5e1;
+            --bs-secondary-color: #94a3b8;
+            --bs-emphasis-color: #f8fafc;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; background-color: var(--bs-body-bg); color: var(--bs-body-color); }
+        
+        /* SIDEBAR */
+        .sidebar { background-color: var(--bs-secondary-bg); width: 260px; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1001; transition: all 0.3s ease; border-right: 1px solid var(--bs-border-color); }
+        .sidebar.collapsed { transform: translateX(-100%); }
+        .sidebar .logo-area { padding: 20px; font-size: 20px; font-weight: bold; border-bottom: 1px solid var(--bs-border-color); }
+        .sidebar .nav-item { padding: 12px 20px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--bs-body-color); font-weight: 500; }
+        .sidebar .nav-item:hover, .sidebar .nav-item.active { background-color: var(--bs-tertiary-bg); color: #3b82f6; border-left: 4px solid #3b82f6; }
+        
+        /* MAIN CONTENT */
+        .main-content { margin-left: 260px; transition: all 0.3s ease; min-height: 100vh; display: flex; flex-direction: column; background-color: var(--bs-body-bg); }
+        .main-content.expanded { margin-left: 0; }
+        
+        /* HEADER NAV */
+        .top-nav { background: var(--bs-secondary-bg); border-bottom: 1px solid var(--bs-border-color); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .quick-menu { font-size: 13px; cursor: pointer; color: var(--bs-secondary-color); }
+        .user-avatar-sm { width: 32px; height: 32px; background-color: var(--bs-secondary-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2b6cb0; font-weight: bold; font-size: 14px; margin-right: 10px; flex-shrink: 0;}
+        
+        .page-body { padding: 20px 30px; flex-grow: 1; }
+        
+        /* ALL DARK MODE CSS REMOVED TO FORCE LIGHT THEME EVERYWHERE */
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="logo-area"><i class="bi bi-shield-check me-2"></i>SECURE QR</div>
+        <div class="mt-3">
+            {% if session.get('role') != 'USER' %}
+            <a href="/dashboard" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}"><i class="bi bi-grid-1x2"></i> Tổng quan</a>
+            {% endif %}
+            
+            <a href="/shop" class="nav-item {% if request.endpoint == 'customer_storefront' %}active{% endif %}"><i class="bi bi-shop"></i> Cửa hàng</a>
+            
+            {% if session.get('role') != 'USER' %}
+            <a href="/transactions" class="nav-item {% if request.endpoint == 'transactions' %}active{% endif %}"><i class="bi bi-arrow-left-right"></i> Giao dịch</a>
+            <a href="/bank" class="nav-item {% if request.endpoint == 'bank' %}active{% endif %}"><i class="bi bi-bank"></i> Ngân hàng</a>
+            <a href="/qr-generator" class="nav-item {% if request.endpoint == 'qr_generator' %}active{% endif %}"><i class="bi bi-qr-code-scan"></i> Tạo QR</a>
+            {% endif %}
+            
+            {% if session.get('role') in ['ADMIN', 'STAFF'] %}
+            <div class="mt-4 pt-3 border-top border-secondary">
+                <a href="/products_manage" class="nav-item {% if request.endpoint == 'products_manage' %}active{% endif %} text-primary"><i class="bi bi-box-seam"></i> Quản lý Sản phẩm</a>
+                <a href="/blockchain" class="nav-item {% if request.endpoint == 'blockchain' %}active{% endif %} text-success"><i class="bi bi-link-45deg"></i> Sổ cái Blockchain</a>
+                <a href="/admin_panel" class="nav-item {% if request.endpoint == 'admin_panel' %}active{% endif %} text-warning"><i class="bi bi-shield-lock-fill"></i> Bảng Quản trị</a>
+                <a href="/settings" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %} text-info"><i class="bi bi-gear-fill"></i> Cấu hình Hệ thống</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-nav">
+            <div class="nav-left">
+                <i class="bi bi-list fs-4" id="sidebarToggle" style="cursor: pointer;"></i>
+                <h5 class="m-0 fw-bold ms-2 text-body-emphasis">{% block page_title %}Hệ thống{% endblock %}</h5>
+                <div class="dropdown d-inline-block ms-3">
+                    <span class="quick-menu" data-bs-toggle="dropdown" aria-expanded="false">
+                        Menu nhanh <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i>
+                    </span>
+                    <div class="dropdown-menu shadow border-0" style="width: 500px; padding: 20px; border-radius: 8px; margin-top: 10px; background-color: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color) !important;">
+                        <div class="row">
+                            <div class="col-4">
+                                <h6 class="text-muted small fw-bold mb-3">Dashboard</h6>
+                                <a href="/dashboard" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-grid me-2"></i> Tổng quan</a>
+                                <a href="/bank" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-bank me-2"></i> Ngân hàng</a>
+                                <a href="/qr-generator" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-qr-code me-2"></i> Tạo QR</a>
+                            </div>
+                            <div class="col-4">
+                                <h6 class="text-muted small fw-bold mb-3">Thống kê</h6>
+                                <a href="/statistics" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-bar-chart me-2"></i> Thống kê sử dụng</a>
+                            </div>
+                            <div class="col-4">
+                                <h6 class="text-muted small fw-bold mb-3">Cấu hình</h6>
+                                <a href="/company_profile" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-building me-2"></i> Hồ sơ công ty</a>
+                                <a href="/account" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-person me-2"></i> Tài khoản</a>
+                                <a href="/users" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-people me-2"></i> Quản lý người dùng</a>
+                                {% if session.get('role') in ['ADMIN', 'STAFF'] %}
+                                <a href="/admin_panel" class="dropdown-item py-1 text-secondary px-0"><i class="bi bi-shield-lock me-2"></i> Bảng Quản trị</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                {% block top_header_extra %}{% endblock %}
+                <a href="#" class="text-primary text-decoration-none small"><i class="bi bi-gift me-1"></i> Ưu đãi</a>
+                <a href="/upgrade" class="text-warning text-decoration-none small fw-bold"><i class="bi bi-star-fill me-1"></i> Nâng cấp</a>
+                <span class="small text-success"><i class="bi bi-wallet2 me-1"></i> Số dư: 0đ</span>
+                
+                <div class="dropdown d-inline-block ms-2">
+                    <a href="/cart" class="text-decoration-none text-secondary">
+                        <i class="bi bi-cart3 fs-5 position-relative">
+                            <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle bg-primary text-white border border-light rounded-circle" style="font-size: 10px; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-style: normal; padding: 0;">0</span>
+                        </i>
+                    </a>
+                </div>
+                
+                <div class="dropdown d-inline-block">
+                    <i class="bi bi-bell text-secondary fs-5 cursor-pointer position-relative" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    </i>
+                    <div class="dropdown-menu dropdown-menu-end shadow border-0" style="width: 350px; padding: 0; border-radius: 8px; margin-top: 15px; background-color: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color) !important;">
+                        <div class="d-flex justify-content-between align-items-center p-3 border-bottom border-secondary-subtle">
+                            <h6 class="m-0 fw-bold text-body-emphasis">Thông báo</h6>
+                            <a href="#" class="text-decoration-none small text-muted"><i class="bi bi-check2-all me-1"></i>Đánh dấu tất cả đã đọc</a>
+                        </div>
+                        <ul class="nav nav-tabs nav-justified border-secondary-subtle" style="font-size: 14px;">
+                            <li class="nav-item">
+                                <a class="nav-link active text-body-emphasis fw-semibold bg-transparent border-secondary-subtle" href="#" style="border-radius: 0; border-top: 0; border-left: 0;"><i class="bi bi-asterisk"></i> Tất cả</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-muted" href="#" style="border-radius: 0; border-top: 0;"><i class="bi bi-bell"></i> Thông báo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-muted" href="#" style="border-radius: 0; border-top: 0; border-right: 0;"><i class="bi bi-gift"></i> Ưu đãi</a>
+                            </li>
+                        </ul>
+                        <div class="text-center p-5">
+                            <div class="mb-3">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle text-primary" style="width: 60px; height: 60px; font-size: 24px;">
+                                    <i class="bi bi-inbox"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0">Hiện chưa có thông báo nào</p>
+                        </div>
+                        <div class="border-top text-center p-2">
+                            <a href="#" class="text-decoration-none text-muted small">Hiển thị tất cả</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown d-inline-block">
+                    <i class="bi bi-sun text-secondary fs-5 cursor-pointer theme-icon" data-bs-toggle="dropdown" aria-expanded="false" id="themeDropdownIcon" style="cursor: pointer;"></i>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="min-width: 150px; border-radius: 8px; margin-top: 15px; background-color: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color) !important;">
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 theme-switch py-2 text-body-emphasis" href="#" data-theme="light"><i class="bi bi-sun"></i> Sáng</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 theme-switch py-2 text-body-emphasis" href="#" data-theme="dark"><i class="bi bi-moon-stars"></i> Tối</a></li>
+                        <li><a class="dropdown-item d-flex align-items-center gap-2 theme-switch py-2 text-body-emphasis" href="#" data-theme="auto"><i class="bi bi-circle-half"></i> Tự động</a></li>
+                    </ul>
+                </div>
+                
+                <div class="dropdown">
+                    <div class="d-flex align-items-center gap-1 cursor-pointer dropdown-toggle-custom" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                        {% set full_name = session.get('full_name', 'Người dùng') %}
+                        {% set name_parts = full_name.strip().split(' ') %}
+                        {% set last_word = name_parts[-1] if name_parts else 'User' %}
+                        {% set initials = last_word[0:2]|upper %}
+                        <div class="user-avatar-sm mb-0 ms-2" id="userAvatarInitials">{{ initials }}</div>
+                        <span class="fw-semibold text-body-emphasis small"><span id="userFullName">{{ full_name }}</span> <i class="bi bi-chevron-down ms-1" style="font-size: 10px;"></i></span>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="width: 260px; border-radius: 8px; background-color: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color) !important;">
+                        <li class="px-3 py-3 border-bottom border-secondary-subtle mb-2">
+                            <a href="/company_profile" class="text-decoration-none text-body-emphasis d-block">
+                                <span class="fw-bold" id="dropdownUserName">{{ full_name }}</span>
+                                {% if session.get('role') == 'ADMIN' %}
+                                <span class="badge bg-danger ms-2">ADMIN</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="/account"><i class="bi bi-person me-3 fs-5"></i> Tài khoản</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="/users"><i class="bi bi-people me-3 fs-5"></i> Quản lý người dùng</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="#"><i class="bi bi-box me-3 fs-5"></i> Gói dịch vụ</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="#"><i class="bi bi-receipt me-3 fs-5"></i> Thanh toán</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="/statistics"><i class="bi bi-bar-chart me-3 fs-5"></i> Thống kê sử dụng</a></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="#"><i class="bi bi-star me-3 fs-5"></i> Nâng cấp</a></li>
+                        <li><hr class="dropdown-divider mt-2 mb-2"></li>
+                        <li><a class="dropdown-item py-2 d-flex align-items-center text-secondary" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-3 fs-5"></i> Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="page-body">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('mainContent').classList.toggle('expanded');
+        });
+        
+        // --- LOGIC GIỎ HÀNG (SHOPPING CART) ---
+        let cart = JSON.parse(localStorage.getItem('hutech_cart')) || [];
+        
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-count-badge');
+            if (badge) {
+                let totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+                badge.innerText = totalItems;
+            }
+        }
+        
+        function addToCart(productId, productName, price) {
+            let existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ id: productId, name: productName, price: price, qty: 1 });
+            }
+            localStorage.setItem('hutech_cart', JSON.stringify(cart));
+            updateCartBadge();
+            
+            // Toast notification
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Đã thêm ' + productName + ' vào giỏ',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+        
+        // Khởi tạo badge giỏ hàng ngay khi load
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+
+        function logout() {
+            fetch('/api/logout')
+            .then(res => res.json())
+            .then(data => {
+                localStorage.removeItem('registered_name');
+                window.location.href = '/';
+            });
+        }
+
+        // --- THEME SWITCHER LOGIC ---
+        const getPreferredTheme = () => {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme) {
+                return storedTheme;
+            }
+            return 'light'; // Ép mặc định là nền sáng (light) thay vì theo hệ điều hành
+        }
+
+        const setTheme = theme => {
+            if (theme === 'auto') {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-bs-theme', 'light');
+                }
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            }
+            updateThemeIcon(theme);
+        }
+
+        const updateThemeIcon = theme => {
+            const icon = document.getElementById('themeDropdownIcon');
+            if (!icon) return;
+            if (theme === 'dark') {
+                icon.className = 'bi bi-moon-stars text-secondary fs-5 cursor-pointer theme-icon';
+            } else if (theme === 'light') {
+                icon.className = 'bi bi-sun text-secondary fs-5 cursor-pointer theme-icon';
+            } else {
+                icon.className = 'bi bi-circle-half text-secondary fs-5 cursor-pointer theme-icon';
+            }
+            
+            document.querySelectorAll('.theme-switch').forEach(el => {
+                if(el.getAttribute('data-theme') === theme) {
+                    el.classList.add('active', 'bg-primary', 'text-white');
+                    el.classList.remove('text-dark');
+                } else {
+                    el.classList.remove('active', 'bg-primary', 'text-white');
+                    el.classList.add('text-dark');
+                }
+            });
+        }
+
+        setTheme(getPreferredTheme());
+
+        document.querySelectorAll('.theme-switch').forEach(element => {
+            element.addEventListener('click', (e) => {
+                e.preventDefault();
+                const theme = element.getAttribute('data-theme');
+                localStorage.setItem('theme', theme);
+                setTheme(theme);
+            })
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme !== 'light' && storedTheme !== 'dark') {
+                setTheme(getPreferredTheme());
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

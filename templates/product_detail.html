@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent: #10b981;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+        }
+        
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .container-detail {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .detail-card {
+            background: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Hình ảnh */
+        .image-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 16px;
+            background: #2dd4bf22;
+        }
+
+        .thumbnails {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .thumbnails img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            opacity: 0.7;
+        }
+
+        .thumbnails img:hover, .thumbnails img.active {
+            border-color: var(--primary);
+            opacity: 1;
+        }
+
+        /* Thông tin */
+        .product-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: rgba(79, 70, 229, 0.2);
+            color: #a78bfa;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            align-self: flex-start;
+        }
+
+        .product-info h1 {
+            font-size: 36px;
+            margin: 0 0 15px 0;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .price {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 0 0 20px 0;
+        }
+
+        .stock-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .stock-status span {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+        }
+
+        button.buy-btn {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: #ffffff !important;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            margin-top: auto;
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        button.buy-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #4338ca, #4f46e5);
+            box-shadow: 0 15px 25px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Modal Customization */
+        .qr-modal-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .qr-image-wrapper {
+            background: white;
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .qr-image-wrapper img {
+            max-width: 250px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .order-info {
+            background: #f8fafc;
+            padding: 12px 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            border: 1px dashed #cbd5e1;
+            color: #334155;
+        }
+
+        .order-info div {
+            margin-bottom: 5px;
+        }
+        
+        .order-info strong {
+            color: #0f172a;
+        }
+
+        @media (max-width: 768px) {
+            .detail-card {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            .main-image {
+                height: 300px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-detail">
+        <a href="/shop" class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Quay lại Cửa hàng
+        </a>
+
+        <div class="detail-card">
+            <!-- Hình ảnh -->
+            <div class="image-gallery">
+                <img id="mainImage" class="main-image" src="{{ p.images[0] }}" alt="{{ p.name }}" onerror="this.src='https://via.placeholder.com/600x400?text=No+Image'">
+                <div class="thumbnails">
+                    {% for img in p.images %}
+                    <img src="{{ img }}" alt="Thumbnail" class="{% if loop.first %}active{% endif %}" onclick="changeImage(this, '{{ img }}')" onerror="this.style.display='none'">
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Thông tin -->
+            <div class="product-info">
+                <span class="category-badge">{{ p.category or 'Chưa phân loại' }}</span>
+                <h1>{{ p.name }}</h1>
+                <p class="price">{{ "{:,.0f}".format(p.price) }} đ</p>
+                
+                <div class="stock-status">
+                    Tình trạng kho: <span>{{ p.stock }} sản phẩm</span>
+                </div>
+                
+                <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 30px;">
+                    Sản phẩm chất lượng cao đến từ HUTECH Store. 
+                    Hỗ trợ thanh toán nhanh chóng qua mã QR an toàn tuyệt đối. 
+                    Chỉ cần 1 chạm bằng ứng dụng Ngân hàng của bạn!
+                </p>
+                
+                <button class="buy-btn" onclick="addToCart('{{ p.id }}', '{{ p.name }}', {{ p.price }})">
+                    <i class="bi bi-cart-plus"></i>
+                    Thêm vào giỏ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function changeImage(element, src) {
+        document.getElementById('mainImage').src = src;
+        
+        // Cập nhật class active
+        document.querySelectorAll('.thumbnails img').forEach(img => {
+            img.classList.remove('active');
+        });
+        element.classList.add('active');
+    }
+    
+    // Các logic giỏ hàng (addToCart) đã được chuyển sang base.html để dùng chung.
+    </script>
+{% endblock %}

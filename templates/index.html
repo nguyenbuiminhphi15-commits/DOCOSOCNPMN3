@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - HUTECH Secure QR</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { background-color: #1a1d20; color: white; }
+        .auth-card { background-color: #212529; border: 1px solid #343a40; }
+        .form-control { background-color: #2c3034; border-color: #495057; color: white; }
+        .form-control:focus { background-color: #2c3034; color: white; border-color: #0d6efd; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100">
+
+    <div class="container" style="max-width: 400px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary">🛡️ SECURE QR</h2>
+            <p class="text-muted">Hệ thống Thanh toán AI & Blockchain</p>
+        </div>
+
+        <div class="card auth-card shadow-lg rounded-4 p-4">
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">TÊN ĐĂNG NHẬP HOẶC HỌ TÊN</label>
+                    <input type="text" class="form-control" placeholder="Nhập Email hoặc Họ tên..." id="username" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label text-secondary small fw-bold">MẬT KHẨU</label>
+                    <input type="password" class="form-control" placeholder="••••••••" id="password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 fw-bold mb-3" id="btnLogin">
+                    ĐĂNG NHẬP
+                </button>
+            </form>
+
+            <div class="text-center mt-2">
+                <span class="text-muted small">Chưa có tài khoản? </span>
+                <a href="/register" class="text-decoration-none fw-bold small">Đăng ký ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let btn = document.getElementById('btnLogin');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang đăng nhập...';
+            btn.disabled = true;
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, password: password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerHTML = 'ĐĂNG NHẬP';
+                btn.disabled = false;
+                
+                if(data.success) {
+                    Swal.fire({
+                        toast: true, position: 'top-end', icon: 'success',
+                        title: 'Đăng nhập thành công', showConfirmButton: false, timer: 1500,
+                        background: '#212529', color: '#fff'
+                    }).then(() => {
+                        // Redirect based on role returned from server, or let backend route handle it via '/'
+                        window.location.href = '/'; 
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Thất bại', text: data.message, background: '#212529', color: '#fff' });
+                }
+            })
+            .catch(error => {
+                btn.innerHTML = 'ĐĂNG NHẬP';
+                btn.disabled = false;
+                Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không kết nối được server', background: '#212529', color: '#fff' });
+            });
+        });
+    </script>
+</body>
+</html>
