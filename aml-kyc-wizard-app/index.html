@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS SECURE BANK - Hệ thống Đăng ký & Giao dịch AML/KYC</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Link Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+    <!-- Background glow elements -->
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
+    <div class="app-container">
+        <!-- SIDEBAR: PROGRESS TRACKER -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="M12 8v8"/>
+                    <path d="M8 12h8"/>
+                </svg>
+                <div class="logo-text">
+                    <h1>AEGIS</h1>
+                    <span>SECURE BANKING</span>
+                </div>
+            </div>
+
+            <!-- Current Section Display -->
+            <div class="section-indicator">
+                <span class="section-badge">Hệ thống AML/KYC</span>
+                <h2 id="current-section-title">Đăng ký & Định danh</h2>
+            </div>
+
+            <!-- Vertical Stepper Progress -->
+            <nav class="stepper-nav">
+                <!-- Group 1: Auth & KYC -->
+                <div class="stepper-group" id="group-auth">
+                    <div class="group-title">PHẦN 1: BẢO MẬT & KYC</div>
+                    
+                    <div class="step-item active" data-step="register-step1" id="nav-register-step1">
+                        <div class="step-icon">1a</div>
+                        <div class="step-label">Thông tin cơ bản</div>
+                    </div>
+                    
+                    <div class="step-item" data-step="register-step2" id="nav-register-step2">
+                        <div class="step-icon">1b</div>
+                        <div class="step-label">Định danh điện tử (e-KYC)</div>
+                    </div>
+
+                    <div class="step-item" data-step="login-form" id="nav-login-form">
+                        <div class="step-icon">2</div>
+                        <div class="step-label">Đăng nhập & 2FA</div>
+                    </div>
+
+                    <div class="step-item" data-step="risk-profile" id="nav-risk-profile">
+                        <div class="step-icon">3</div>
+                        <div class="step-label">Hồ sơ rủi ro (EDD)</div>
+                    </div>
+                </div>
+
+                <!-- Group 2: Transaction Flow -->
+                <div class="stepper-group locked" id="group-transaction">
+                    <div class="group-title">PHẦN 2: THỰC HIỆN GIAO DỊCH</div>
+                    
+                    <div class="step-item" data-step="tx-initiation" id="nav-tx-initiation">
+                        <div class="step-icon">4</div>
+                        <div class="step-label">Khởi tạo giao dịch</div>
+                    </div>
+
+                    <div class="step-item" data-step="tx-purpose" id="nav-tx-purpose">
+                        <div class="step-icon">5</div>
+                        <div class="step-label">Khai báo nguồn & mục đích</div>
+                    </div>
+
+                    <div class="step-item" data-step="tx-documents" id="nav-tx-documents">
+                        <div class="step-icon">6</div>
+                        <div class="step-label">Cung cấp chứng từ</div>
+                    </div>
+                </div>
+
+                <!-- Group 3: Review & Auth -->
+                <div class="stepper-group locked" id="group-auth-tx">
+                    <div class="group-title">PHẦN 3: XÁC NHẬN & DUYỆT</div>
+
+                    <div class="step-item" data-step="tx-review" id="nav-tx-review">
+                        <div class="step-icon">7</div>
+                        <div class="step-label">Xác nhận thông tin</div>
+                    </div>
+
+                    <div class="step-item" data-step="tx-approval" id="nav-tx-approval">
+                        <div class="step-icon">8</div>
+                        <div class="step-label">Smart OTP & Sinh trắc</div>
+                    </div>
+
+                    <div class="step-item" data-step="tx-status" id="nav-tx-status">
+                        <div class="step-icon">9</div>
+                        <div class="step-label">Trạng thái Giao dịch</div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Bottom system info -->
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span class="status-txt">Hệ thống AML hoạt động</span>
+                </div>
+                <div class="theme-switch-wrapper">
+                    <span>Chế độ sáng</span>
+                    <label class="theme-switch" for="checkbox-theme">
+                        <input type="checkbox" id="checkbox-theme" />
+                        <div class="slider round"></div>
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="user-status-bar">
+                    <div class="user-info-badge" id="current-user-badge">
+                        <span class="avatar">U</span>
+                        <div>
+                            <div class="user-name">Khách vãng lai</div>
+                            <div class="user-role">Chưa định danh (Unverified)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary btn-sm" id="btn-show-guide">Quy định Pháp lý</button>
+                    <button class="btn btn-outline btn-sm" id="btn-reset-app">Đặt lại Demo</button>
+                    <a href="/" class="btn btn-primary btn-sm" style="text-decoration: none; padding-top: 10px;">Admin Login</a>
+                </div>
+            </header>
+
+            <div class="form-wizard-card">
+                <!-- FORM 1: REGISTER - STEP 1 (BASIC & ACCOUNT) -->
+                <section class="wizard-step active" id="step-register-step1">
+                    <div class="step-header">
+                        <h2>Đăng ký tài khoản</h2>
+                        <p>Bước 1: Điền thông tin cơ bản để bắt đầu thiết lập tài khoản an toàn.</p>
+                    </div>
+
+                    <form id="form-register-step1" class="wizard-form" novalidate>
+                        <div class="form-group">
+                            <label for="reg-fullname">
+                                Họ và tên đầy đủ
+                                <span class="required">*</span>
+                                <span class="info-tooltip" data-tooltip="Nhập chính xác họ tên in hoa có dấu khớp với thông tin trên CCCD/Hộ chiếu của bạn.">i</span>
+                            </label>
+                            <input type="text" id="reg-fullname" placeholder="VÍ DỤ: NGUYỄN VĂN A" required minlength="4">
+                            <span class="error-msg">Vui lòng nhập họ và tên hợp lệ</span>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="reg-email">
+                                    Email cá nhân
+                                    <span class="required">*</span>
+                                    <span class="info-tooltip" data-tooltip="Hệ thống sẽ gửi mã xác nhận email để kích hoạt tài khoản.">i</span>
+                                </label>
+                                <input type="email" id="reg-email" placeholder="example@domain.com" required>
+                                <span class="error-msg">Email không đúng định dạng</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-phone">
+                                    Số điện thoại
+                                    <span class="required">*</span>
+                                    <span class="info-tooltip" data-tooltip="Sử dụng số điện thoại đăng ký chính chủ để nhận mã SMS OTP giao dịch.">i</span>
+                                </label>
+                                <input type="tel" id="reg-phone" placeholder="VÍ DỤ: 0912345678" required pattern="^0[3|5|7|8|9][0-9]{8}$">
+                                <span class="error-msg">Số điện thoại 10 số, bắt đầu bằng 03/05/07/08/09</span>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="reg-password">Mật khẩu <span class="required">*</span></label>
+                                <input type="password" id="reg-password" placeholder="••••••••" required minlength="8">
+                                <span class="error-msg">Mật khẩu tối thiểu 8 ký tự</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-confirmpassword">Nhập lại mật khẩu <span class="required">*</span></label>
+                                <input type="password" id="reg-confirmpassword" placeholder="••••••••" required>
+                                <span class="error-msg">Mật khẩu nhập lại không khớp</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div></div>
+                            <button type="submit" class="btn btn-primary">
+                                Tiếp tục (e-KYC)
+                                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- FORM 1: REGISTER - STEP 2 (e-KYC) -->
+                <section class="wizard-step" id="step-register-step2">
+                    <div class="step-header">
+                        <h2>Định danh điện tử (e-KYC)</h2>
+                        <p>Bước 2: Xác minh danh tính bắt buộc theo quy định phòng chống rửa tiền (Luật Phòng, chống rửa tiền Việt Nam).</p>
+                    </div>
+
+                    <form id="form-register-step2" class="wizard-form" novalidate>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="kyc-doctype">Loại giấy tờ định danh <span class="required">*</span></label>
+                                <select id="kyc-doctype" required>
+                                    <option value="cccd_chip">Căn cước công dân gắn chip</option>
+                                    <option value="cccd">Căn cước / CMND cũ</option>
+                                    <option value="passport">Hộ chiếu</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="kyc-dob">Ngày sinh <span class="required">*</span></label>
+                                <input type="date" id="kyc-dob" required>
+                                <span class="error-msg">Bạn phải đủ 18 tuổi để đăng ký</span>
+                            </div>
+                        </div>
+
+                        <!-- Document Upload Grid -->
+                        <div class="upload-zone-grid">
+                            <div class="upload-box-wrapper">
+                                <label class="upload-label">Ảnh mặt trước giấy tờ <span class="required">*</span></label>
+                                <div class="upload-dropzone" id="dropzone-front">
+                                    <input type="file" id="file-front" accept="image/*" class="file-input-hidden" required>
+                                    <div class="dropzone-prompt">
+                                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                                            <polyline points="21 15 16 10 5 21"/>
+                                        </svg>
+                                        <span>Kéo thả hoặc Click để chọn ảnh mặt trước</span>
+                                        <span class="file-limits">Định dạng JPG, PNG, tối đa 5MB</span>
+                                    </div>
+                                    <div class="dropzone-preview hidden" id="preview-front"></div>
+                                </div>
+                            </div>
+
+                            <div class="upload-box-wrapper">
+                                <label class="upload-label">Ảnh mặt sau giấy tờ <span class="required">*</span></label>
+                                <div class="upload-dropzone" id="dropzone-back">
+                                    <input type="file" id="file-back" accept="image/*" class="file-input-hidden" required>
+                                    <div class="dropzone-prompt">
+                                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                                            <polyline points="21 15 16 10 5 21"/>
+                                        </svg>
+                                        <span>Kéo thả hoặc Click để chọn ảnh mặt sau</span>
+                                        <span class="file-limits">Định dạng JPG, PNG, tối đa 5MB</span>
+                                    </div>
+                                    <div class="dropzone-preview hidden" id="preview-back"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Face Video Verification (Liveness check) -->
+                        <div class="liveness-section">
+                            <label class="upload-label">
+                                Xác thực Liveness (Khuôn mặt động)
+                                <span class="required">*</span>
+                                <span class="info-tooltip" data-tooltip="Video liveness yêu cầu bạn thực hiện cử chỉ quay trái, quay phải, mỉm cười để chứng minh thực thể sống, chống giả mạo Deepfake.">i</span>
+                            </label>
+                            
+                            <div class="liveness-container">
+                                <div class="camera-simulation" id="camera-viewport">
+                                    <!-- Default placeholder -->
+                                    <div class="camera-placeholder" id="camera-placeholder">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                            <circle cx="12" cy="13" r="4"/>
+                                        </svg>
+                                        <p>Nhấn nút kích hoạt để bắt đầu Liveness Check</p>
+                                    </div>
+                                    
+                                    <!-- Active camera simulator -->
+                                    <div class="camera-active hidden" id="camera-active">
+                                        <video id="webcam" autoplay playsinline muted></video>
+                                        <div class="face-guideline"></div>
+                                        <div class="gesture-prompt" id="gesture-prompt">Vui lòng để mặt vào khung tròn</div>
+                                        <div class="recording-dot"></div>
+                                    </div>
+                                </div>
+
+                                <div class="liveness-controls">
+                                    <button type="button" class="btn btn-secondary btn-full" id="btn-start-liveness">
+                                        Kích hoạt Liveness Camera
+                                    </button>
+                                    <div class="alternative-upload">
+                                        <p>Hoặc tải lên Video cử chỉ định sẵn (tối đa 10MB):</p>
+                                        <input type="file" id="file-video" accept="video/*">
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="error-msg" id="liveness-error">Vui lòng hoàn tất kiểm tra khuôn mặt</span>
+                        </div>
+
+                        <!-- Demographics & Address -->
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="kyc-nationality">Quốc tịch <span class="required">*</span></label>
+                                <input type="text" id="kyc-nationality" value="Việt Nam" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="kyc-permanent-address">Địa chỉ thường trú (Theo giấy tờ) <span class="required">*</span></label>
+                                <input type="text" id="kyc-permanent-address" placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/TP" required>
+                                <span class="error-msg">Vui lòng nhập địa chỉ thường trú</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="kyc-same-address" checked>
+                                <label for="kyc-same-address">Địa chỉ hiện tại giống với địa chỉ thường trú</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group hidden" id="current-address-group">
+                            <label for="kyc-current-address">Địa chỉ hiện tại <span class="required">*</span></label>
+                            <input type="text" id="kyc-current-address" placeholder="Nhập địa chỉ tạm trú hiện tại">
+                            <span class="error-msg">Vui lòng nhập địa chỉ tạm trú</span>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline btn-prev" id="btn-reg2-back">Quay lại</button>
+                            <button type="submit" class="btn btn-primary">
+                                Gửi e-KYC & Đăng ký
+                                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- FORM 2: LOGIN & 2FA -->
+                <section class="wizard-step" id="step-login-form">
+                    <div class="step-header">
+                        <h2>Đăng nhập Hệ thống</h2>
+                        <p>Xác thực truy cập an toàn với tính năng bảo mật hai lớp (2FA) bắt buộc.</p>
+                    </div>
+
+                    <!-- Step 2a: Login Username/Password -->
+                    <form id="form-login" class="wizard-form" novalidate>
+                        <div class="form-group">
+                            <label for="login-username">Tên đăng nhập (Email / Số điện thoại) <span class="required">*</span></label>
+                            <input type="text" id="login-username" placeholder="Nhập email hoặc số điện thoại của bạn" required>
+                            <span class="error-msg">Vui lòng nhập tên đăng nhập</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-password">Mật khẩu <span class="required">*</span></label>
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                            <span class="error-msg">Vui lòng nhập mật khẩu</span>
+                        </div>
+
+                        <div class="form-actions">
+                            <div></div>
+                            <button type="submit" class="btn btn-primary">
+                                Đăng nhập
+                                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Step 2b: 2FA Verification (Will overlay or swap in place via JS) -->
+                    <div id="login-2fa-section" class="verification-wrapper hidden">
+                        <div class="security-shield-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="5" y="11" width="14" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <h3>Xác thực 2 Yếu tố (2FA)</h3>
+                        <p>Một mã OTP đã được gửi đến số điện thoại đăng ký của bạn. Vui lòng nhập mã gồm 6 chữ số dưới đây.</p>
+                        
+                        <div class="otp-input-container">
+                            <input type="text" maxlength="1" class="otp-field" data-index="0" autofocus>
+                            <input type="text" maxlength="1" class="otp-field" data-index="1">
+                            <input type="text" maxlength="1" class="otp-field" data-index="2">
+                            <input type="text" maxlength="1" class="otp-field" data-index="3">
+                            <input type="text" maxlength="1" class="otp-field" data-index="4">
+                            <input type="text" maxlength="1" class="otp-field" data-index="5">
+                        </div>
+
+                        <div class="otp-timer">
+                            Mã OTP hết hiệu lực trong <span id="2fa-timer-count">120</span> giây
+                        </div>
+
+                        <div class="form-actions align-center">
+                            <button type="button" class="btn btn-outline" id="btn-resend-2fa">Gửi lại OTP</button>
+                            <button type="button" class="btn btn-primary" id="btn-verify-2fa">Xác minh truy cập</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FORM 3: RISK PROFILE & EDD -->
+                <section class="wizard-step" id="step-risk-profile">
+                    <div class="step-header">
+                        <h2>Cập nhật Hồ sơ rủi ro (EDD)</h2>
+                        <p>Thông tin thu nhập và thẩm định chuyên sâu (Enhanced Due Diligence) theo quy định của FATF nhằm thiết lập mức hạn mức giao dịch an toàn.</p>
+                    </div>
+
+                    <form id="form-risk-profile" class="wizard-form" novalidate>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="edd-occupation">Nghề nghiệp / Chức vụ hiện tại <span class="required">*</span></label>
+                                <input type="text" id="edd-occupation" placeholder="Ví dụ: Giám đốc kinh doanh, Lập trình viên..." required>
+                                <span class="error-msg">Vui lòng điền nghề nghiệp</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edd-company">Tên tổ chức / Công ty đang công tác <span class="required">*</span></label>
+                                <input type="text" id="edd-company" placeholder="Ví dụ: Công ty Công nghệ Aegis" required>
+                                <span class="error-msg">Vui lòng điền tên tổ chức</span>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="edd-income">Mức thu nhập ước tính (Hàng tháng) <span class="required">*</span></label>
+                                <select id="edd-income" required>
+                                    <option value="" disabled selected>Chọn mức thu nhập của bạn</option>
+                                    <option value="under_20m">Dưới 20 triệu VND</option>
+                                    <option value="20m_50m">Từ 20 triệu đến 50 triệu VND</option>
+                                    <option value="50m_100m">Từ 50 triệu đến 100 triệu VND</option>
+                                    <option value="over_100m">Trên 100 triệu VND</option>
+                                </select>
+                                <span class="error-msg">Vui lòng chọn mức thu nhập</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edd-pep">
+                                    Bạn hoặc thân nhân là PEP?
+                                    <span class="required">*</span>
+                                    <span class="info-tooltip" data-tooltip="PEP (Politically Exposed Persons) - Người có ảnh hưởng chính trị: Các cá nhân giữ vị trí công vụ cấp cao trong cơ quan nhà nước, quân đội, tòa án hoặc doanh nghiệp nhà nước (và các thành viên gia đình trực hệ của họ).">i</span>
+                                </label>
+                                <div class="radio-group-horizontal">
+                                    <label class="radio-label">
+                                        <input type="radio" name="edd-pep" value="yes"> Có, tôi hoặc người thân là PEP
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="edd-pep" value="no" checked> Không phải PEP
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info flex-alert">
+                            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                            <div>
+                                <strong>Lưu ý về PEP:</strong> Theo tiêu chuẩn của Lực lượng Đặc nhiệm Tài chính quốc tế (FATF), ngân hàng có nghĩa vụ áp dụng các biện pháp Thẩm định chuyên sâu hơn (EDD) đối với tài khoản liên quan đến PEP nhằm ngăn chặn nguy cơ lạm dụng chức quyền và tham nhũng.
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div></div>
+                            <button type="submit" class="btn btn-primary">
+                                Hoàn tất cập nhật hồ sơ
+                                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- FORM 4: TRANSFER INITIATION -->
+                <section class="wizard-step" id="step-tx-initiation">
+                    <div class="step-header">
+                        <h2>Khởi tạo Giao dịch Chuyển tiền</h2>
+                        <p>Bước 1/4: Điền thông tin Người nhận và số tiền cần chuyển. Hệ thống kiểm tra cấm vận tự động.</p>
+                    </div>
+
+                    <form id="form-tx-initiation" class="wizard-form" novalidate>
+                        <!-- Sender info (Read-only display of card selection) -->
+                        <div class="form-group">
+                            <label for="tx-sender-account">Tài khoản nguồn trích tiền <span class="required">*</span></label>
+                            <select id="tx-sender-account" required>
+                                <option value="acct_1">Tài khoản Thanh toán VND - 1092837465 - Số dư: 950,000,000 VND</option>
+                                <option value="acct_2">Tài khoản Đô la Mỹ USD - 9901837465 - Số dư: 25,000 USD</option>
+                            </select>
+                        </div>
+
+                        <div class="section-divider">Thông tin Người nhận (Beneficiary)</div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="tx-receiver-name">Họ và tên người nhận / Tổ chức thụ hưởng <span class="required">*</span></label>
+                                <input type="text" id="tx-receiver-name" placeholder="NHẬP TÊN IN HOA KHÔNG DẤU" required>
+                                <span class="error-msg">Vui lòng nhập tên người thụ hưởng</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tx-receiver-account">Số tài khoản / IBAN <span class="required">*</span></label>
+                                <input type="text" id="tx-receiver-account" placeholder="Ví dụ: 9988221155 hoặc IBAN đối với quốc tế" required>
+                                <span class="error-msg">Vui lòng nhập số tài khoản người nhận</span>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="tx-receiver-bank">Tên Ngân hàng nhận <span class="required">*</span></label>
+                                <input type="text" id="tx-receiver-bank" placeholder="Ví dụ: Techcombank, Citibank..." required>
+                                <span class="error-msg">Vui lòng nhập tên ngân hàng nhận</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tx-receiver-branch">Chi nhánh ngân hàng nhận</label>
+                                <input type="text" id="tx-receiver-branch" placeholder="Ví dụ: Chi nhánh Hà Nội">
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="tx-receiver-country">
+                                    Quốc gia nhận tiền
+                                    <span class="required">*</span>
+                                    <span class="info-tooltip" data-tooltip="Hệ thống tự động thực hiện Quét Cấm Vận (Sanction Screening). Chuyển tiền tới các quốc gia bị cấm vận/rủi ro cao như Iran, Triều Tiên sẽ bị phong tỏa để kiểm duyệt.">i</span>
+                                </label>
+                                <select id="tx-receiver-country" required>
+                                    <option value="VN" selected>Việt Nam (Nội địa)</option>
+                                    <option value="US">Hoa Kỳ (Mỹ)</option>
+                                    <option value="SG">Singapore</option>
+                                    <option value="KR">Hàn Quốc</option>
+                                    <option value="JP">Nhật Bản</option>
+                                    <option value="MY">Malaysia</option>
+                                    <option value="EU">Khu vực Châu Âu (Eurozone)</option>
+                                    <option value="IR">Iran (Quốc gia cấm vận - Sanctioned)</option>
+                                    <option value="KP">Triều Tiên (Quốc gia cấm vận - Sanctioned)</option>
+                                    <option value="RU">Nga (Quốc gia rủi ro cao - High Risk)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tx-swift">
+                                    Mã SWIFT/BIC (Nếu chuyển quốc tế)
+                                    <span class="info-tooltip" data-tooltip="Mã SWIFT (Society for Worldwide Interbank Financial Telecommunication) là mã định danh gồm 8 đến 11 ký tự dùng để nhận diện ngân hàng toàn cầu.">i</span>
+                                </label>
+                                <input type="text" id="tx-swift" placeholder="VÍ DỤ: VTEB VN VX (8-11 ký tự)">
+                                <span class="error-msg">Mã SWIFT không đúng định dạng (8-11 ký tự)</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tx-receiver-address">Địa chỉ cư trú người nhận <span class="required">*</span></label>
+                            <input type="text" id="tx-receiver-address" placeholder="Nhập địa chỉ chi tiết của người nhận" required>
+                            <span class="error-msg">Địa chỉ người nhận là bắt buộc đối với việc kiểm quét AML</span>
+                        </div>
+
+                        <div class="section-divider">Thông tin số tiền chuyển</div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="tx-amount">
+                                    Số tiền chuyển
+                                    <span class="required">*</span>
+                                    <span class="info-tooltip" data-tooltip="Theo quy định tại Quyết định của Ngân hàng Nhà nước và Luật Phòng chống rửa tiền, các giao dịch lớn từ 400.000.000 VND trở lên thuộc diện phải báo cáo giao dịch giá trị lớn (STR/CTR).">i</span>
+                                </label>
+                                <div class="currency-input-wrapper">
+                                    <input type="number" id="tx-amount" placeholder="Nhập số tiền chuyển" required min="1000">
+                                    <span class="currency-unit" id="currency-display-unit">VND</span>
+                                </div>
+                                <span class="error-msg">Nhập số tiền chuyển hợp lệ</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tx-currency">Loại tiền tệ <span class="required">*</span></label>
+                                <select id="tx-currency" required>
+                                    <option value="VND" selected>VND (Đồng Việt Nam)</option>
+                                    <option value="USD">USD (Đô la Mỹ)</option>
+                                    <option value="EUR">EUR (Euro)</option>
+                                    <option value="KRW">KRW (Won Hàn Quốc)</option>
+                                    <option value="JPY">JPY (Yên Nhật)</option>
+                                    <option value="MYR">MYR (Ringgit Malaysia)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- DYNAMIC REGULATORY WARNING FOR LARGE TRANSACTIONS -->
+                        <div class="alert alert-warning flex-alert hidden" id="large-tx-warning">
+                            <svg class="alert-icon pulse-animation" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            <div>
+                                <strong>CẢNH BÁO BÁO CÁO GIAO DỊCH LỚN (STR/CTR):</strong> 
+                                <span id="warning-text">Số tiền bạn yêu cầu chuyển vượt ngưỡng 400,000,000 VND quy định báo cáo giao dịch của Ngân hàng Nhà nước Việt Nam. Yêu cầu bắt buộc phải khai báo nguồn gốc tiền tệ, mục đích sử dụng và cung cấp chứng từ minh bạch đính kèm ở các bước sau.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div></div>
+                            <button type="submit" class="btn btn-primary">
+                                Tiếp tục: Khai báo nguồn tiền
+                                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- FORM 5: SOURCE & PURPOSE -->
+                <section class="wizard-step" id="step-tx-purpose">
+                    <div class="step-header">
+                        <h2>Khai báo Nguồn tiền & Mục đích Giao dịch</h2>
+                        <p>Bước 2/4: Tuyên bố thông tin theo chuẩn kiểm soát rủi ro Chống tài trợ khủng bố và Rửa tiền (AML/CFT).</p>
+                    </div>
+
+                    <form id="form-tx-purpose" class="wizard-form" novalidate>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="tx-relationship">
+                                    Mối quan hệ với Người thụ hưởng
+                                    <span class="required">*</span>
+                                    <span class="info-tooltip" data-tooltip="Khảo sát mối liên kết xã hội/pháp lý giúp AI đánh giá xác suất giao dịch bất thường (ví dụ: chuyển khoản giá trị cao cho người lạ không quen biết).">i</span>
+                                </label>
+                                <select id="tx-relationship" required>
+                                    <option value="" disabled selected>Chọn mối quan hệ</option>
+                                    <option value="self">Bản thân (Chuyển khoản cùng chủ tài khoản)</option>
+                                    <option value="family">Người thân trong gia đình (Cha mẹ, vợ chồng, con cái...)</option>
+                                    <option value="business">Đối tác kinh doanh / Nhà cung cấp dịch vụ</option>
+                                    <option value="friend">Bạn bè / Người quen</option>
+                                    <option value="stranger">Không quen biết / Giao dịch qua mạng</option>
+                                </select>
+                                <span class="error-msg">Vui lòng chọn mối quan hệ</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tx-purpose">
+                                    Mục đích chuyển tiền
+                                    <span class="required">*</span>
+                                    <span class="info-tooltip" data-tooltip="Quyết định loại tài liệu chứng minh bạn cần cung cấp ở bước tiếp theo để hợp thức hóa giao dịch hợp pháp.">i</span>
+                                </label>
+                                <select id="tx-purpose" required>
+                                    <option value="" disabled selected>Chọn mục đích chuyển tiền</option>
+                                    <option value="study">Thanh toán học phí (Du học)</option>
+                                    <option value="medical">Thanh toán viện phí / Khám chữa bệnh nước ngoài</option>
+                                    <option value="family_support">Trợ cấp thân nhân ở nước ngoài</option>
+                                    <option value="investment">Đầu tư tài chính / Mua cổ phiếu ngoại</option>
+                                    <option value="real_estate">Mua bất động sản / Nhà đất</option>
+                                    <option value="commerce">Thanh toán hợp đồng thương mại / Mua hàng hóa</option>
+                                    <option value="savings">Gửi tiết kiệm / Chuyển nội bộ</option>
+                                </select>
+                                <span class="error-msg">Vui lòng chọn mục đích chuyển tiền</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tx-source">
+                                Nguồn gốc của số tiền giao dịch này
+                                <span class="required">*</span>
+                                <span class="info-tooltip" data-tooltip="Xác nhận dòng tiền luân chuyển xuất phát từ nguồn hoạt động hợp pháp có thể chứng minh được.">i</span>
+                            </label>
+                            <select id="tx-source" required>
+                                <option value="" disabled selected>Chọn nguồn gốc dòng tiền</option>
+                                <option value="salary">Lương / Thu nhập tích lũy công việc</option>
+                                <option value="real_estate_sale">Tiền bán bất động sản / Tài sản lớn</option>
+                                <option value="inheritance">Thừa kế / Tặng cho hợp pháp</option>
+                                <option value="business_profit">Lợi nhuận kinh doanh / Cổ tức đầu tư</option>
+                                <option value="loan">Khoản vay ngân hàng / Tổ chức tín dụng</option>
+                                <option value="other">Nguồn thu nhập hợp pháp khác</option>
+                            </select>
+                            <span class="error-msg">Vui lòng chọn nguồn gốc dòng tiền</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tx-description">Mô tả chi tiết mục đích và nội dung giao dịch <span class="required">*</span></label>
+                            <textarea id="tx-description" rows="4" placeholder="Ví dụ: Chuyển tiền đóng học phí học kỳ I năm 2026 cho con trai Nguyễn Văn B tại Đại học National University of Singapore theo giấy báo số 19283..." required minlength="15"></textarea>
+                            <div class="textarea-counter"><span id="char-count">0</span> / tối thiểu 15 ký tự</div>
+                            <span class="error-msg">Vui lòng nhập mô tả chi tiết (tối thiểu 15 ký tự)</span>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline btn-prev" id="btn-purpose-back">Quay lại</button>
+                            <button type="submit" class="btn btn-primary">
+                                Tiếp tục: Tải chứng từ
+                                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- FORM 6: DOCUMENT UPLOAD -->
+                <section class="wizard-step" id="step-tx-documents">
+                    <div class="step-header">
+                        <h2>Cung cấp Chứng từ chứng minh mục đích</h2>
+                        <p>Bước 3/4: Tải lên tài liệu pháp lý chứng minh tính hợp pháp của giao dịch theo quy định phòng chống rửa tiền.</p>
+                    </div>
+
+                    <form id="form-tx-documents" class="wizard-form" novalidate>
+                        <!-- Dynamic requirement prompt box -->
+                        <div class="document-hint-box" id="doc-hint-container">
+                            <div class="hint-header">
+                                <svg class="hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                    <polyline points="10 9 9 9 8 9"/>
+                                </svg>
+                                <h4>Chứng từ yêu cầu cho mục đích: <span id="doc-hint-purpose-title" class="highlight-text">Vui lòng chọn mục đích ở bước trước</span></h4>
+                            </div>
+                            <ul class="hint-list" id="doc-hint-list">
+                                <!-- Suggested documents dynamically generated by JS -->
+                                <li>Chọn mục đích ở bước trước để xem gợi ý chứng từ phù hợp.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Document File Dropzone -->
+                        <div class="upload-zone-wrapper">
+                            <label class="upload-label">Đính kèm tài liệu (Có thể đính kèm nhiều tệp) <span class="required">*</span></label>
+                            <div class="upload-dropzone" id="dropzone-documents">
+                                <input type="file" id="file-documents" accept=".pdf,image/*" multiple class="file-input-hidden" required>
+                                <div class="dropzone-prompt">
+                                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17 8 12 3 7 8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    <span>Kéo thả các tài liệu chứng từ của bạn vào đây hoặc Click để chọn tệp</span>
+                                    <span class="file-limits">Hỗ trợ định dạng PDF, JPG, PNG. Tối đa 10MB mỗi file</span>
+                                </div>
+                                <div class="file-list-preview hidden" id="file-list-preview">
+                                    <!-- List of files uploaded -->
+                                </div>
+                            </div>
+                            <span class="error-msg" id="documents-error">Vui lòng tải lên ít nhất một chứng từ hợp lệ</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tx-doc-notes">Ghi chú bổ sung về chứng từ đính kèm</label>
+                            <textarea id="tx-doc-notes" rows="3" placeholder="Nhập mô tả thêm về hồ sơ, ví dụ: 'Hợp đồng thương mại đã được ký đóng dấu ở trang cuối cùng, đính kèm tờ khai hải quan số...'"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline btn-prev" id="btn-documents-back">Quay lại</button>
+                            <button type="submit" class="btn btn-primary">
+                                Tiếp tục: Xem lại giao dịch
+                                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- FORM 7: TRANSACTION REVIEW -->
+                <section class="wizard-step" id="step-tx-review">
+                    <div class="step-header">
+                        <h2>Xác nhận thông tin giao dịch</h2>
+                        <p>Bước 4/4: Vui lòng kiểm tra kỹ tất cả thông tin giao dịch lớn trước khi thực hiện ký duyệt bảo mật.</p>
+                    </div>
+
+                    <div class="review-layout">
+                        <!-- Left: Info summary block -->
+                        <div class="review-details">
+                            <div class="review-card">
+                                <h3>Thông tin người gửi & Nhận</h3>
+                                <div class="review-row">
+                                    <span class="review-label">Tài khoản trích tiền:</span>
+                                    <span class="review-value" id="rev-sender">Tài khoản thanh toán VND - 1092837465</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Người thụ hưởng:</span>
+                                    <span class="review-value font-bold" id="rev-receiver-name">NGUYỄN VĂN B</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Tài khoản nhận / IBAN:</span>
+                                    <span class="review-value" id="rev-receiver-account">9988221155</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Ngân hàng / Chi nhánh:</span>
+                                    <span class="review-value" id="rev-bank">Techcombank - Chi nhánh Hà Nội</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Quốc gia nhận tiền:</span>
+                                    <span class="review-value" id="rev-country">Việt Nam</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Mã SWIFT/BIC:</span>
+                                    <span class="review-value" id="rev-swift">-</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Địa chỉ người nhận:</span>
+                                    <span class="review-value" id="rev-receiver-address">-</span>
+                                </div>
+                            </div>
+
+                            <div class="review-card">
+                                <h3>Số tiền & Khai báo nguồn</h3>
+                                <div class="review-row highlight-row">
+                                    <span class="review-label">Số tiền chuyển:</span>
+                                    <span class="review-value amount-badge" id="rev-amount">500,000,000 VND</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Mối quan hệ:</span>
+                                    <span class="review-value" id="rev-relationship">-</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Mục đích chuyển:</span>
+                                    <span class="review-value" id="rev-purpose">-</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Nguồn gốc số tiền:</span>
+                                    <span class="review-value" id="rev-source">-</span>
+                                </div>
+                                <div class="review-row">
+                                    <span class="review-label">Chi tiết nội dung:</span>
+                                    <span class="review-value italics" id="rev-description">-</span>
+                                </div>
+                            </div>
+
+                            <div class="review-card">
+                                <h3>Chứng từ chứng minh đính kèm</h3>
+                                <div class="review-row">
+                                    <span class="review-label">Danh sách tệp tin:</span>
+                                    <span class="review-value" id="rev-files">Không có tệp nào được đính kèm</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Legal confirmation and commitments -->
+                        <form id="form-tx-review" class="review-form" novalidate>
+                            <div class="legal-commitments">
+                                <h4>Cam kết pháp lý & Khai báo sự thật</h4>
+                                <p class="legal-note">Theo quy định pháp luật hình sự về Chống Rửa Tiền & Tài Trợ Khủng Bố, bạn phải cam kết các nội dung dưới đây trước khi giao dịch được khởi tạo.</p>
+                                
+                                <div class="commitment-checkboxes">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="commit-legal" required>
+                                        <span class="checkbox-text">Tôi cam kết nguồn tiền giao dịch này hoàn toàn hợp pháp và không liên quan đến bất kỳ hành vi rửa tiền, tài trợ khủng bố hay hoạt động phi pháp nào. <span class="required">*</span></span>
+                                    </label>
+                                    
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="commit-truth" required>
+                                        <span class="checkbox-text">Tôi xác cam kết mọi thông tin khai báo và các tài liệu chứng từ đính kèm là hoàn toàn đúng sự thật. Tôi hoàn toàn chịu trách nhiệm trước pháp luật nếu có sai sót. <span class="required">*</span></span>
+                                    </label>
+
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="commit-terms" required>
+                                        <span class="checkbox-text">Tôi đã đọc, hiểu rõ và đồng ý với Điều khoản Sử dụng, Quy chế thực hiện giao dịch lớn và Chính sách Bảo mật của Aegis Secure Bank. <span class="required">*</span></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline btn-prev" id="btn-review-back">Quay lại sửa đổi</button>
+                                <button type="submit" class="btn btn-primary" id="btn-review-submit">
+                                    Xác nhận & Duyệt lệnh
+                                    <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- FORM 8: FINAL APPROVAL (OTP & BIOMETRIC SIGNATURE) -->
+                <section class="wizard-step" id="step-tx-approval">
+                    <div class="step-header">
+                        <h2>Xác thực Ký số & Phê duyệt Giao dịch</h2>
+                        <p>Ký số bảo mật để hoàn tất phê duyệt chuyển tiền giá trị lớn thông qua Smart OTP hoặc WebAuthn Sinh trắc học.</p>
+                    </div>
+
+                    <div class="approval-layout">
+                        <!-- Smart OTP verification block -->
+                        <div class="approval-card">
+                            <div class="badge-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                                    <line x1="12" y1="18" x2="12.01" y2="18"/>
+                                </svg>
+                            </div>
+                            <h3>Nhập mã Smart OTP</h3>
+                            <p>Mở ứng dụng di động Aegis Secure để lấy mã bảo mật Smart OTP (tự động thay đổi mỗi 30s) và điền bên dưới.</p>
+                            
+                            <div class="otp-input-container smart-otp-inputs">
+                                <input type="text" maxlength="1" class="otp-field-smart" data-index="0" autofocus>
+                                <input type="text" maxlength="1" class="otp-field-smart" data-index="1">
+                                <input type="text" maxlength="1" class="otp-field-smart" data-index="2">
+                                <input type="text" maxlength="1" class="otp-field-smart" data-index="3">
+                                <input type="text" maxlength="1" class="otp-field-smart" data-index="4">
+                                <input type="text" maxlength="1" class="otp-field-smart" data-index="5">
+                            </div>
+
+                            <button type="button" class="btn btn-secondary btn-full" id="btn-autofill-otp">Nhập nhanh mã Smart OTP mẫu</button>
+                        </div>
+
+                        <!-- WebAuthn Biometric block -->
+                        <div class="approval-card border-left-glow">
+                            <div class="badge-icon biometric-pulse">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 15a5 5 0 1 1 5-5 5 5 0 0 1-5 5z"/>
+                                    <path d="M12 9a3 3 0 1 0 3 3 3 3 0 0 0-3-3z"/>
+                                </svg>
+                            </div>
+                            <h3>Xác thực Sinh trắc học (WebAuthn)</h3>
+                            <p>Nếu thiết bị của bạn hỗ trợ Windows Hello, vân tay hoặc FaceID, hãy chọn phê duyệt nhanh qua giao thức WebAuthn bảo mật cao.</p>
+                            
+                            <button type="button" class="btn btn-outline btn-full btn-biometric" id="btn-biometric-auth">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="biometric-icon">
+                                    <path d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0z"/>
+                                    <path d="M12 16a4 4 0 0 0 4-4H8a4 4 0 0 0 4 4z"/>
+                                </svg>
+                                Quét vân tay / Khuôn mặt (Windows Hello)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- WebAuthn Simulation Modal Overlay -->
+                    <div id="biometric-simulation" class="modal-overlay hidden">
+                        <div class="modal-card">
+                            <div class="biometric-scan-animation">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
+                                    <path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4m-8 0c0 2.2 1.8 4 4 4s4-1.8 4-4" stroke-dasharray="1 1"/>
+                                    <path d="M6 12c0-3.3 2.7-6 6-6s6 2.7 6 6m-12 0c0 3.3 2.7 6 6 6s6-2.7 6-6" stroke-dasharray="3 3"/>
+                                </svg>
+                                <div class="scanner-bar"></div>
+                            </div>
+                            <h3>Windows Hello / WebAuthn</h3>
+                            <p>Đang quét bảo mật sinh trắc học để ký khóa số cá nhân...</p>
+                            <span class="simulation-status">Hãy nhìn vào camera hoặc chạm cảm biến vân tay</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions align-center">
+                        <button type="button" class="btn btn-outline" id="btn-approval-back">Quay lại kiểm tra</button>
+                        <button type="button" class="btn btn-primary" id="btn-confirm-transaction" disabled>Ký và Gửi giao dịch</button>
+                    </div>
+                </section>
+
+                <!-- FORM 9: TRANSACTION STATUS (AI RISK SCORING PROCESSOR) -->
+                <section class="wizard-step" id="step-tx-status">
+                    <div class="step-header">
+                        <h2>Xử lý giao dịch & Chấm điểm AML</h2>
+                        <p>Hệ thống AI Engine đang chấm điểm rủi ro và quét quy tắc cấm vận thời gian thực.</p>
+                    </div>
+
+                    <div class="status-processing-wrapper" id="status-processing">
+                        <div class="loading-spinner-huge"></div>
+                        <h3>Hệ thống đang kiểm toán giao dịch...</h3>
+                        <p class="processing-note">Vui lòng không tắt trình duyệt. Đang quét Cơ sở dữ liệu cấm vận quốc tế và kiểm duyệt cấu trúc giao dịch lớn theo luật NHNN.</p>
+                        
+                        <div class="processing-substeps">
+                            <div class="substep" id="substep-sanction">
+                                <span class="substep-dot"></span> Quét danh sách đen trừng phạt (Sanction Screening)
+                            </div>
+                            <div class="substep" id="substep-pep">
+                                <span class="substep-dot"></span> Kiểm soát tài khoản chính trị PEP
+                            </div>
+                            <div class="substep" id="substep-aml">
+                                <span class="substep-dot"></span> Phân tích dòng tiền & Hóa đơn chứng từ đính kèm
+                            </div>
+                            <div class="substep" id="substep-ai">
+                                <span class="substep-dot"></span> Tính toán hệ số rủi ro AI Scoring
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Final Result: Approved (Safe) -->
+                    <div class="result-card success hidden" id="status-approved">
+                        <div class="result-icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <h2>Giao dịch Thành công (Approved)</h2>
+                        <p class="result-desc">Giao dịch đã được hệ thống AML/CFT chấm điểm rủi ro an toàn và thực hiện chuyển tiền thành công.</p>
+                        
+                        <div class="transaction-receipt">
+                            <div class="receipt-row">
+                                <span>Mã tham chiếu giao dịch:</span>
+                                <strong id="receipt-ref-num">TXN-293847-AEGIS</strong>
+                            </div>
+                            <div class="receipt-row">
+                                <span>Số tiền đã gửi:</span>
+                                <strong id="receipt-amount">50,000,000 VND</strong>
+                            </div>
+                            <div class="receipt-row">
+                                <span>Người nhận:</span>
+                                <strong id="receipt-receiver">NGUYỄN VĂN B</strong>
+                            </div>
+                            <div class="receipt-row">
+                                <span>Thời gian:</span>
+                                <strong id="receipt-time">24-05-2026 19:35</strong>
+                            </div>
+                            <div class="receipt-row">
+                                <span>Chỉ số rủi ro AML:</span>
+                                <span class="risk-badge badge-green" id="receipt-risk-score">15 / 100 (An toàn)</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions align-center">
+                            <button type="button" class="btn btn-primary" id="btn-success-new">Thực hiện giao dịch mới</button>
+                        </div>
+                    </div>
+
+                    <!-- Final Result: Blocked (High Risk) -->
+                    <div class="result-card pending-review hidden" id="status-pending">
+                        <div class="result-icon-wrapper" style="color: var(--danger); border-color: var(--danger); background: rgba(239, 68, 68, 0.1);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                        </div>
+                        <h2 style="color: var(--danger);">Giao dịch Bị Chặn (Blocked)</h2>
+                        <p class="result-desc">Cảnh báo: Yêu cầu chuyển tiền có dấu hiệu rủi ro cao bất thường. Giao dịch đã bị từ chối và mã băm sự kiện (hash) đã được ghi lên Blockchain.</p>
+                        
+                        <div class="transaction-receipt warning-receipt">
+                            <div class="receipt-row">
+                                <span>Mã băm Blockchain (TxHash):</span>
+                                <strong id="pending-ref-num" style="word-break: break-all; font-family: monospace; font-size: 0.8rem; color: var(--danger);">0x...</strong>
+                            </div>
+                            <div class="receipt-row">
+                                <span>Số tiền yêu cầu:</span>
+                                <strong id="pending-amount">500,000,000 VND</strong>
+                            </div>
+                            <div class="receipt-row">
+                                <span>Chỉ số rủi ro AML:</span>
+                                <span class="risk-badge badge-red" id="pending-risk-score">85 / 100 (Rủi ro cao)</span>
+                            </div>
+                            <div class="receipt-row flex-column">
+                                <span>Quy tắc rủi ro bị kích hoạt:</span>
+                                <ul class="risk-rules-triggered" id="pending-rules-list">
+                                    <li>Mức tiền vượt ngưỡng báo cáo NHNN (>400 triệu VND)</li>
+                                    <li>Tài khoản người gửi có cấu trúc PEP (Chính trị gia)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning flex-alert">
+                            <div>
+                                <strong>Thông báo Blockchain:</strong> Mọi thông tin nỗ lực giao dịch của bạn đã được đóng gói thành khối (block) và lưu trữ phi tập trung để phục vụ công tác điều tra. Sự kiện này là bất biến.
+                            </div>
+                        </div>
+
+                        <div class="form-actions align-center">
+                            <button type="button" class="btn btn-outline" id="btn-pending-edit">Chỉnh sửa thông tin giao dịch</button>
+                            <button type="button" class="btn btn-primary" id="btn-pending-home">Về trang chủ</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL: DEMO CONTROL & REAL-TIME LOGS -->
+        <aside class="right-panel">
+            <div class="panel-header">
+                <h3>Bảng điều khiển Demo</h3>
+                <span class="helper-tag">Dành cho Tester</span>
+            </div>
+
+            <!-- Quick Autofill Controls -->
+            <div class="demo-section">
+                <h4>Điền thông tin tự động mẫu</h4>
+                <div class="demo-buttons-grid">
+                    <button class="btn btn-xs btn-demo-fill" id="demo-fill-normal">
+                        Kịch bản A (Rủi ro Thấp)
+                        <span class="sub-desc">Giao dịch 50M, không PEP, nước VN</span>
+                    </button>
+                    <button class="btn class-danger btn-xs btn-demo-fill" id="demo-fill-high-amount">
+                        Kịch bản B (Giao dịch Lớn)
+                        <span class="sub-desc">Giao dịch 500M, có PEP, nước VN</span>
+                    </button>
+                    <button class="btn class-danger btn-xs btn-demo-fill" id="demo-fill-sanction">
+                        Kịch bản C (Cấm vận)
+                        <span class="sub-desc">Giao dịch 150M, gửi đến Iran (IR)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- AML Live Simulation Logs -->
+            <div class="demo-section flex-grow-section">
+                <div class="logs-header">
+                    <h4>AML AI Engine Engine Logs</h4>
+                    <span class="pulse-dot"></span>
+                </div>
+                <div class="logs-console" id="logs-console">
+                    <div class="log-line system">[SYSTEM] Hệ thống AML/KYC đã khởi tạo thành công. Sẵn sàng giám sát...</div>
+                </div>
+            </div>
+
+            <div class="demo-section help-section-bottom">
+                <h4>Chỉ số Chấm điểm rủi ro:</h4>
+                <div class="risk-index-indicator">
+                    <div class="risk-bar">
+                        <span class="bar-seg seg-green" title="0-39: Thấp"></span>
+                        <span class="bar-seg seg-yellow" title="40-69: Trung bình"></span>
+                        <span class="bar-seg seg-red" title="70-100: Cao"></span>
+                    </div>
+                    <div class="risk-scale-labels">
+                        <span>0 (Safe)</span>
+                        <span>70 (Review)</span>
+                        <span>100 (Block)</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- REGULATORY RULES MODAL -->
+    <div id="modal-guide" class="modal-overlay hidden">
+        <div class="modal-card wide-modal">
+            <div class="modal-header">
+                <h3>Khung Pháp lý Phòng Chống Rửa Tiền (AML/CFT)</h3>
+                <button class="btn-close-modal" id="btn-close-guide">&times;</button>
+            </div>
+            <div class="modal-body text-layout">
+                <h4>1. Quy định báo cáo giao dịch giá trị lớn (CTR)</h4>
+                <p>Theo **Luật Phòng, chống rửa tiền năm 2022** và Quyết định số 09/2023/QĐ-TTg của Thủ tướng Chính phủ, các giao dịch tài chính bằng tiền mặt hoặc chuyển khoản có giá trị lớn từ **400.000.000 VND** trở lên bắt buộc phải lập báo cáo giao dịch có giá trị lớn gửi về Cục Phòng, chống rửa tiền - Ngân hàng Nhà nước Việt Nam.</p>
+                
+                <h4>2. Nhóm đối tượng PEP (Politically Exposed Persons)</h4>
+                <p>Khuyến nghị của **FATF (Financial Action Task Force)** quy định các tổ chức tài chính phải áp dụng biện pháp nhận biết tăng cường (EDD) đối với khách hàng là người có ảnh hưởng chính trị (PEP), thành viên gia đình hoặc người có liên quan trực tiếp để phòng ngừa hành vi tham nhũng, rửa tiền xuyên quốc gia.</p>
+
+                <h4>3. Quét cấm vận & Trừng phạt (Sanction Screening)</h4>
+                <p>Mọi giao dịch thanh toán quốc tế được lọc tự động qua danh sách trừng phạt của **Hội đồng Bảo an Liên Hợp Quốc (UNSC)**, **Văn phòng Kiểm soát Tài sản Nước ngoài Hoa Kỳ (OFAC)** và Bộ Tài chính Việt Nam. Các giao dịch liên quan đến cá nhân, pháp nhân từ các quốc gia bị cấm vận (Iran, Triều Tiên...) sẽ bị giữ lại hoặc chặn ngay lập tức.</p>
+
+                <h4>4. Quy tắc quản lý chứng từ chứng minh nguồn gốc</h4>
+                <p>Giao dịch chuyển khoản ngoại tệ ra nước ngoài yêu cầu khắt khe về hồ sơ chứng minh mục đích sử dụng vốn hợp pháp (Ví dụ: Giấy báo học phí, hóa đơn điều trị y tế, Hợp đồng thương mại). Ngân hàng có quyền đình chỉ thực hiện giao dịch nếu khách hàng từ chối cung cấp chứng từ xác minh nguồn tiền.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-close-guide-footer">Tôi đã hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link Logic JS -->
+    <script src="app.js"></script>
+</body>
+</html>
